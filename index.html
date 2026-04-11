@@ -44,11 +44,11 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
  
 /* HERO — Australian gradient */
 .hero-section{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;padding-top:56px;}
-.hero-gradient{position:absolute;inset:0;background:url(hero.jpg) center/cover no-repeat;}
-.hero-gradient::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(8,8,8,.80) 0%,rgba(8,8,8,.55) 55%,rgba(8,8,8,.28) 100%);}
-.hero-content{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:80px 32px;display:grid;grid-template-columns:1fr 380px;gap:48px;align-items:center;width:100%;}
+.hero-gradient{position:absolute;inset:0;background:url(opera-dusk.jpg) center/cover no-repeat;background-position:center 30%;}
+.hero-gradient::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(8,8,8,.45) 0%,rgba(8,8,8,.2) 60%,rgba(8,8,8,.05) 100%);}
+.hero-content{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:100px 48px 96px;width:100%;}
 .hero-tag{display:inline-block;font-family:var(--ui);font-weight:700;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:20px;padding:4px 12px;border:1px solid rgba(255,255,255,.4);border-radius:4px;background:rgba(0,0,0,.15);}
-.hero-hl{font-family:var(--ui);font-weight:800;font-size:clamp(36px,5vw,72px);line-height:1.0;letter-spacing:-2px;text-transform:uppercase;color:var(--w);margin-bottom:20px;text-shadow:0 2px 20px rgba(0,0,0,.2);}
+.hero-hl{font-family:var(--ui);font-weight:800;font-size:clamp(38px,5.5vw,80px);line-height:1.0;letter-spacing:-2px;text-transform:uppercase;color:var(--w);margin-bottom:20px;text-shadow:0 2px 20px rgba(0,0,0,.2);}
 .hero-hl em{font-style:normal;color:var(--gold);}
 .hero-p{font-size:17px;color:rgba(255,255,255,.85);max-width:500px;line-height:1.7;margin-bottom:32px;text-shadow:0 1px 8px rgba(0,0,0,.15);}
 .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;}
@@ -63,7 +63,7 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
 .hero-proof-text strong{color:var(--w);}
  
 /* HERO RIGHT — floating card */
-.hero-card{background:rgba(255,255,255,.97);border-radius:16px;padding:28px 24px;border:2px solid rgba(0,0,0,.08);backdrop-filter:blur(8px);}
+.hero-card{display:none;}
 .hero-card-title{font-family:var(--ui);font-weight:800;font-size:13px;letter-spacing:-.2px;margin-bottom:18px;color:var(--ink);}
 .hero-tile-mini{padding:15px 18px;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .18s;display:flex;justify-content:space-between;align-items:center;border:2px solid transparent;}
 .hero-tile-mini:hover{border-color:var(--ink);transform:translateY(-1px);}
@@ -109,11 +109,11 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
 .photo-inner{max-width:1100px;margin:0 auto;padding:72px 32px;}
 .photo-header{margin-bottom:36px;}
 .photo-hl{font-family:var(--ui);font-weight:800;font-size:clamp(24px,3.5vw,44px);letter-spacing:-1.5px;text-transform:uppercase;}
-.photo-cards{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink);}
+.photo-cards{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink);align-items:stretch;}
 .pcard{overflow:hidden;cursor:pointer;transition:opacity .2s;}
 .pcard:hover{opacity:.92;}
 .pcard:first-child{border-right:2px solid var(--ink);}
-.pcard-vis{height:260px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:28px;}
+.pcard-vis{height:280px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:28px;overflow:hidden;}
 .pcard.whv .pcard-vis{background:url(sydney2.jpg) center/cover no-repeat;position:relative;}
 .pcard.skl .pcard-vis{background:url(apostles.jpg) center/cover no-repeat;position:relative;}
 .pcard-vis::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.3) 60%,rgba(0,0,0,.1) 100%);z-index:0;border-radius:0;}
@@ -221,7 +221,8 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
 .form-guarantee{font-family:var(--ui);font-size:10.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--mu);text-align:center;margin-top:12px;}
  
 /* PROCESSING */
-#processing-section{min-height:calc(100vh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:48px;background:var(--g);padding-top:80px;}
+#processing-section{min-height:calc(100vh - 56px);flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:80px 48px 48px;background:var(--g);}
+.section.active#processing-section{display:flex;}
 .proc-ring{width:44px;height:44px;border-radius:50%;border:3px solid var(--b);border-top-color:var(--blue);animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .proc-title{font-family:var(--ui);font-weight:800;font-size:24px;letter-spacing:-1px;text-transform:uppercase;}
@@ -231,7 +232,8 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
 .proc-steps li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--b);flex-shrink:0;}
  
 /* RESULTS + FREEMIUM */
-#results-section{padding:80px 20px 88px;max-width:720px;margin:0 auto;animation:up .4s ease both;}
+#results-section{padding:80px 20px 88px;max-width:720px;margin:0 auto;}
+.section.active#results-section{display:block;animation:up .4s ease both;}
 .verdict{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:6px;font-family:var(--ui);font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:14px;border:2px solid;}
 .v-dot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block;flex-shrink:0;}
 .verdict.ok{background:#E8FFF5;color:#0A7A42;border-color:rgba(10,122,66,.2);}
@@ -349,20 +351,7 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
         <div class="hero-proof-text"><strong id="ld-stat-label">2,847 audits</strong> &bull; Results in 5 min</div>
       </div>
     </div>
-    <div class="hero-card">
-      <div class="hero-card-title" id="ld-micro">Choose your visa audit</div>
-      <div class="hero-tile-mini whv" onclick="go('whv-form')">
-        <div><div class="htm-label" id="whv-label">Working Holiday</div><div class="htm-name" id="whv-name">WHV 417 &amp; 462</div></div>
-        <div class="htm-price">AU$59</div>
-      </div>
-      <div class="hero-card-vs">&#8594; Verdict free, full report unlocked</div>
-      <div class="hero-tile-mini skl" onclick="go('skilled-form')">
-        <div><div class="htm-label" id="skl-label">Skilled Migration</div><div class="htm-name" id="skl-name">189 &middot; 190 &middot; 491</div></div>
-        <div class="htm-price">AU$199</div>
-      </div>
-      <div class="hero-card-guarantee">Secure payment &bull; <strong>PDF in minutes</strong> &bull; One-time</div>
     </div>
-  </div>
 </div>
  
 <!-- TRUST STRIP -->
@@ -376,6 +365,19 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
  
       <div style="font-family:var(--ui);font-weight:800;font-size:clamp(30px,4.5vw,58px);letter-spacing:-2px;line-height:1.0;text-transform:uppercase;color:white;">Your new chapter<br><span style="color:var(--gold);">starts with clarity.</span></div>
       <div style="font-size:16px;color:rgba(255,255,255,.7);margin-top:16px;line-height:1.65;">Know if you&#8217;re eligible before spending thousands on agents or months on the wrong path.</div>
+    </div>
+  </div>
+</div>
+ 
+ 
+<!-- SYDNEY STRIP -->
+<div style="height:380px;overflow:hidden;border-bottom:2px solid var(--ink);position:relative;">
+  <img src="hero.jpg" alt="Sydney Opera House and Harbour Bridge" style="width:100%;height:100%;object-fit:cover;object-position:center 55%;display:block;">
+  <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(8,8,8,.75) 0%,rgba(8,8,8,.3) 55%,transparent 100%);display:flex;align-items:center;padding:0 52px;">
+    <div style="max-width:520px;">
+      <div style="font-family:var(--ui);font-weight:700;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px;">Sydney, Australia</div>
+      <div style="font-family:var(--ui);font-weight:800;font-size:clamp(28px,4vw,54px);letter-spacing:-2px;line-height:1.0;text-transform:uppercase;color:white;">Your next chapter<br><span style="color:var(--gold);">starts here.</span></div>
+      <div style="font-size:16px;color:rgba(255,255,255,.65);margin-top:16px;line-height:1.65;">Know if you&#8217;re eligible before spending months on the wrong path.</div>
     </div>
   </div>
 </div>
@@ -660,9 +662,91 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
   <div class="disc" id="res-disc"></div>
 </section>
  
+ 
+<!-- BLOG -->
+<div style="border-bottom:2px solid var(--ink);background:var(--g);">
+  <div style="max-width:1100px;margin:0 auto;padding:72px 32px;">
+    <div style="font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu);margin-bottom:14px;">Resources</div>
+    <div style="font-family:var(--ui);font-weight:800;font-size:clamp(24px,3.5vw,44px);letter-spacing:-1.5px;text-transform:uppercase;margin-bottom:40px;">Everything You Need<br>to Know</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:2px solid var(--ink);">
+ 
+      <div style="border-right:2px solid var(--ink);overflow:hidden;cursor:pointer;transition:opacity .18s;" onmouseenter="this.style.opacity='.9'" onmouseleave="this.style.opacity='1'">
+        <div style="height:180px;overflow:hidden;">
+          <img src="beach.jpg" alt="Australia beach" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;transition:transform .4s;" onmouseenter="this.style.transform='scale(1.04)'" onmouseleave="this.style.transform='scale(1)'">
+        </div>
+        <div style="padding:24px;">
+          <div style="font-family:var(--ui);font-weight:700;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:10px;">Working Holiday</div>
+          <div style="font-family:var(--ui);font-weight:800;font-size:18px;letter-spacing:-.5px;margin-bottom:10px;line-height:1.2;">WHV 417 vs 462 : quelle différence pour vous ?</div>
+          <div style="font-size:13.5px;color:var(--mid);line-height:1.65;">Nationalité éligible, conditions d'âge, renouvellement : tout ce qu'il faut savoir avant de postuler.</div>
+          <div style="margin-top:16px;font-family:var(--ui);font-weight:700;font-size:12px;color:var(--blue);display:flex;align-items:center;gap:6px;">Lire l'article <span>&#8594;</span></div>
+        </div>
+      </div>
+ 
+      <div style="border-right:2px solid var(--ink);overflow:hidden;cursor:pointer;transition:opacity .18s;" onmouseenter="this.style.opacity='.9'" onmouseleave="this.style.opacity='1'">
+        <div style="height:180px;overflow:hidden;">
+          <img src="apostles.jpg" alt="Great Ocean Road" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;" onmouseenter="this.style.transform='scale(1.04)'" onmouseleave="this.style.transform='scale(1)'">
+        </div>
+        <div style="padding:24px;">
+          <div style="font-family:var(--ui);font-weight:700;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:10px;">Skilled Migration</div>
+          <div style="font-family:var(--ui);font-weight:800;font-size:18px;letter-spacing:-.5px;margin-bottom:10px;line-height:1.2;">189, 190, 491 : le guide complet des visas qualifiés</div>
+          <div style="font-size:13.5px;color:var(--mid);line-height:1.65;">SkillSelect, points, invitations : comprendre le système en 10 minutes pour maximiser vos chances.</div>
+          <div style="margin-top:16px;font-family:var(--ui);font-weight:700;font-size:12px;color:var(--blue);display:flex;align-items:center;gap:6px;">Lire l'article <span>&#8594;</span></div>
+        </div>
+      </div>
+ 
+      <div style="overflow:hidden;cursor:pointer;transition:opacity .18s;" onmouseenter="this.style.opacity='.9'" onmouseleave="this.style.opacity='1'">
+        <div style="height:180px;overflow:hidden;">
+          <img src="map.jpg" alt="Australia map" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;" onmouseenter="this.style.transform='scale(1.04)'" onmouseleave="this.style.transform='scale(1)'">
+        </div>
+        <div style="padding:24px;">
+          <div style="font-family:var(--ui);font-weight:700;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:10px;">Conseils pratiques</div>
+          <div style="font-family:var(--ui);font-weight:800;font-size:18px;letter-spacing:-.5px;margin-bottom:10px;line-height:1.2;">Combien ça coûte vraiment de s'installer en Australie ?</div>
+          <div style="font-size:13.5px;color:var(--mid);line-height:1.65;">Budget visa, santé, logement, transport : le vrai coût de départ que personne ne vous dit.</div>
+          <div style="margin-top:16px;font-family:var(--ui);font-weight:700;font-size:12px;color:var(--blue);display:flex;align-items:center;gap:6px;">Lire l'article <span>&#8594;</span></div>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+</div>
+ 
 <footer>
-  <span class="footer-logo">VISA<span class="dot">AUDIT</span>.AU</span>
-  <span class="footer-legal" id="footer-legal">&#169; 2025 VisaAudit.au &middot; Not a registered migration agent (MARA) &middot; For informational purposes only</span>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="footer-logo">VISA<span class="dot">AUDIT</span>.AU</span>
+      <div class="footer-tagline">The fastest way to know if Australia is actually within reach. No agent needed to get started.</div>
+      <button class="footer-cta-sm" onclick="go('whv-form')">Start Free Audit &#8594;</button>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Audits</div>
+      <a onclick="go('whv-form')">Working Holiday (WHV)</a>
+      <a onclick="go('skilled-form')">Skilled Migration</a>
+      <a onclick="go('whv-form')">417 &amp; 462 Visas</a>
+      <a onclick="go('skilled-form')">189 · 190 · 491 Visas</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Resources</div>
+      <a>WHV Guide 2025</a>
+      <a>Points Calculator</a>
+      <a>MARA Agent Directory</a>
+      <a>DIBP Official Site</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Legal</div>
+      <a>Privacy Policy</a>
+      <a>Terms of Service</a>
+      <a>Refund Policy</a>
+      <a>Contact Us</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-legal" id="footer-legal">&#169; 2025 VisaAudit.au &middot; Not a registered migration agent (MARA) &middot; For informational purposes only</span>
+    <div class="footer-badges">
+      <span class="footer-badge">SSL Secure</span>
+      <span class="footer-badge">DIBP Data 2025</span>
+      <span class="footer-badge">9 Languages</span>
+    </div>
+  </div>
 </footer>
 <script>
  
