@@ -27,7 +27,7 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
 #topnav{position:fixed;top:0;left:0;right:0;z-index:300;background:var(--blue);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
 .logo{font-family:var(--ui);font-weight:800;font-size:14px;color:var(--w);white-space:nowrap;flex-shrink:0;}
 .logo .dot{color:var(--gold);}
-.nav-cta{padding:8px 20px;background:var(--gold);border:none;border-radius:6px;font-family:var(--ui);font-weight:700;font-size:12.5px;color:var(--ink);cursor:pointer;transition:opacity .18s;flex-shrink:0;}
+.nav-cta{padding:8px 20px;background:transparent;border:1.5px solid var(--gold);border-radius:6px;font-family:var(--ui);font-weight:700;font-size:12.5px;color:var(--gold);cursor:pointer;transition:all .18s;flex-shrink:0;}
 .nav-cta:hover{opacity:.88;}
 .lang-selector{position:relative;flex-shrink:0;}
 .lang-btn{background:none;border:1px solid rgba(255,255,255,.35);border-radius:6px;padding:5px 12px;font-family:var(--ui);font-weight:700;font-size:11.5px;color:rgba(255,255,255,.85);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .18s;}
@@ -43,18 +43,18 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
 .lname{font-size:13px;color:var(--ink);font-weight:500;}
  
 /* HERO — Australian gradient */
-.hero-section{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;padding-top:56px;}
+.hero-section{position:relative;min-height:100vh;height:100vh;display:flex;align-items:center;overflow:hidden;padding-top:56px;}
 .hero-gradient{position:absolute;inset:0;background:url(hero.jpg) center/cover no-repeat;background-position:center 40%;}
 .hero-gradient::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(8,8,8,.45) 0%,rgba(8,8,8,.2) 60%,rgba(8,8,8,.05) 100%);}
 .hero-content{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:100px 48px 96px;width:100%;}
 .hero-tag{display:inline-block;font-family:var(--ui);font-weight:700;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:20px;padding:4px 12px;border:1px solid rgba(255,255,255,.4);border-radius:4px;background:rgba(0,0,0,.15);}
-.hero-hl{font-family:var(--ui);font-weight:800;font-size:clamp(28px,3.2vw,48px);line-height:1.0;letter-spacing:-2px;text-transform:uppercase;color:var(--w);margin-bottom:20px;text-shadow:0 2px 20px rgba(0,0,0,.2);}
+.hero-hl{font-family:var(--ui);font-weight:800;font-size:clamp(28px,5vw,72px);line-height:1.0;letter-spacing:-2px;text-transform:uppercase;color:var(--w);margin-bottom:20px;text-shadow:0 2px 20px rgba(0,0,0,.2);}
 .hero-hl em{font-style:normal;color:var(--gold);}
 .hero-p{font-size:17px;color:rgba(255,255,255,.85);max-width:500px;line-height:1.7;margin-bottom:32px;text-shadow:0 1px 8px rgba(0,0,0,.15);}
 .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;}
-.btn-hero-primary{padding:16px 28px;background:var(--gold);border:none;border-radius:var(--r);font-family:var(--ui);font-weight:800;font-size:15px;color:var(--ink);cursor:pointer;transition:all .18s;}
-.btn-hero-primary:hover{background:#FFE070;transform:translateY(-2px);}
-.btn-hero-secondary{padding:16px 24px;background:rgba(0,0,0,.2);border:1.5px solid rgba(255,255,255,.5);border-radius:var(--r);font-family:var(--ui);font-weight:700;font-size:15px;color:var(--w);cursor:pointer;transition:all .18s;}
+.btn-hero-primary{padding:10px 20px;background:linear-gradient(135deg,#FFD146 0%,#FF9B3D 40%,#FF4F6B 75%,#7C3AED 100%);border:none;border-radius:2px;font-family:var(--ui);font-weight:800;font-size:13px;color:var(--w);cursor:pointer;transition:all .18s;transform:rotate(-1.2deg);box-shadow:2px 3px 0 rgba(0,0,0,.3);display:inline-block;}
+.btn-hero-primary:hover{opacity:.88;transform:rotate(-1.2deg) translateY(-2px);}
+.btn-hero-secondary{padding:11px 20px;background:rgba(0,0,0,.2);border:1.5px solid rgba(255,255,255,.5);border-radius:var(--r);font-family:var(--ui);font-weight:600;font-size:13px;color:var(--w);cursor:pointer;transition:all .18s;}
 .btn-hero-secondary:hover{background:rgba(0,0,0,.3);}
 .hero-proof{display:flex;align-items:center;gap:14px;}
 .hero-proof-faces{display:flex;}
@@ -90,7 +90,7 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
 .compare-col.before{background:var(--dark);color:var(--w);}
 .compare-col.after{background:var(--gold);}
 .compare-col.after.compare-col-divider{border-left:2px solid var(--ink);}
-.compare-col-tag{font-family:var(--ui);font-weight:800;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;opacity:.5;}
+.compare-col-tag{font-family:var(--ui);font-weight:800;font-size:22px;letter-spacing:-0.5px;text-transform:none;margin-bottom:24px;opacity:1;line-height:1.1;}
 .compare-list{list-style:none;}
 .compare-list li{font-size:14.5px;line-height:1.6;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:flex-start;gap:12px;}
 .compare-col.after .compare-list li{border-bottom-color:rgba(0,0,0,.1);color:var(--ink);}
@@ -274,29 +274,119 @@ body{font-family:var(--body);background:var(--w);color:var(--ink);line-height:1.
 .btn-act.s:hover{background:var(--g);}
 .disc{background:var(--g);border-radius:var(--r);border:1.5px solid var(--b);padding:13px 16px;margin-top:14px;font-family:var(--ui);font-size:10.5px;color:var(--mu);line-height:1.65;}
  
-/* FOOTER — WTTJ blue */
-footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-.footer-logo{font-family:var(--ui);font-weight:800;font-size:12px;color:rgba(255,255,255,.5);}
+/* FOOTER */
+footer{background:var(--ink);border-top:2px solid var(--ink);}
+.footer-top{max-width:1100px;margin:0 auto;padding:52px 48px 36px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;}
+.footer-logo{font-family:var(--ui);font-weight:800;font-size:16px;color:rgba(255,255,255,.9);display:block;margin-bottom:12px;}
 .footer-logo .dot{color:var(--gold);}
-.footer-legal{font-family:var(--ui);font-size:10.5px;color:rgba(255,255,255,.35);}
+.footer-tagline{font-size:13.5px;color:rgba(255,255,255,.45);line-height:1.65;max-width:240px;margin-bottom:20px;}
+.footer-cta-sm{display:inline-block;padding:10px 18px;background:linear-gradient(135deg,#FFD146 0%,#FF9B3D 40%,#FF4F6B 75%,#7C3AED 100%);color:var(--w);border-radius:6px;font-family:var(--ui);font-weight:700;font-size:12.5px;cursor:pointer;transition:opacity .18s;border:none;}
+.footer-cta-sm:hover{opacity:.85;}
+.footer-col-title{font-family:var(--ui);font-weight:700;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px;}
+.footer-col a{display:block;font-size:13.5px;color:rgba(255,255,255,.5);margin-bottom:10px;cursor:pointer;text-decoration:none;transition:color .18s;}
+.footer-col a:hover{color:rgba(255,255,255,.9);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);max-width:1100px;margin:0 auto;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.footer-legal{font-family:var(--ui);font-size:11px;color:rgba(255,255,255,.25);}
+.footer-badges{display:flex;gap:10px;}
+.footer-badge{font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,.25);padding:4px 8px;border:1px solid rgba(255,255,255,.1);border-radius:4px;}
  
+/* ── TABLET (max 900px) ── */
 @media(max-width:900px){
-  .hero-content{grid-template-columns:1fr;gap:32px;padding:60px 20px;}
+  #topnav{padding:0 16px;}
+  .hero-content{grid-template-columns:1fr;padding:72px 24px 60px;}
   .hero-card{display:none;}
+  .hero-hl{font-size:clamp(28px,5.5vw,48px);}
+  .hero-p{font-size:14px;max-width:100%;}
+  .hero-ctas{gap:10px;}
+  .trust-strip{gap:10px;padding:10px 16px;flex-wrap:wrap;justify-content:flex-start;}
+  .trust-item{font-size:11px;}
+  /* Sydney strip */
+  .hero-section{min-height:70vh;}
+  /* Compare */
+  .compare-inner{padding:48px 20px;}
   .compare-grid{grid-template-columns:1fr;}
+  .compare-col{padding:28px 24px;}
   .compare-col.after.compare-col-divider{border-left:none;border-top:2px solid var(--ink);}
+  .compare-price-num{font-size:40px;}
+  /* Cards */
+  .photo-section .photo-inner{padding:48px 20px;}
   .photo-cards{grid-template-columns:1fr;}
   .pcard:first-child{border-right:none;border-bottom:2px solid var(--ink);}
-  .hiw-steps,.testi-grid{grid-template-columns:1fr;}
-  .hiw-step,.testi-card{border-right:none!important;border-bottom:2px solid var(--b);}
-  .hiw-step:last-child,.testi-card:last-child{border-bottom:none;}
+  /* HIW */
+  .hiw-inner{padding:48px 20px;}
+  .hiw-steps{grid-template-columns:1fr;}
+  .hiw-step{border-right:none!important;border-bottom:2px solid var(--b);}
+  .hiw-step:last-child{border-bottom:none;}
+  /* Abstract CTA */
+  .abstract-inner{padding:56px 20px;}
+  .abstract-hl{font-size:clamp(28px,6vw,48px);}
+  .abstract-btns{flex-direction:column;align-items:stretch;}
+  .btn-abs-p,.btn-abs-s{width:100%;text-align:center;}
+  /* Testi */
+  .testi-inner{padding:48px 20px;}
+  .testi-grid{grid-template-columns:1fr;}
+  .testi-card{border-right:none!important;border-bottom:2px solid var(--b);}
+  .testi-card:last-child{border-bottom:none;}
+  /* FAQ */
+  .faq-inner{padding:48px 20px;}
+  /* Blog */
+  .compare-inner > div[style*="grid-template-columns:repeat(3"]{grid-template-columns:1fr!important;}
+  /* Photo grid (map/koala/kangaroos) */
+  div[style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr!important;}
+  /* Footer */
+  .footer-top{grid-template-columns:1fr 1fr;gap:24px;padding:36px 20px 24px;}
+  .footer-brand{grid-column:1/-1;}
+  .footer-bottom{padding:16px 20px;flex-direction:column;text-align:center;gap:12px;}
+  /* Forms */
+  .form-wrap{padding:32px 12px 60px;}
   .form-card{padding:26px 16px;}
   .row2{grid-template-columns:1fr;}
-  footer{flex-direction:column;text-align:center;}
-  .trust-strip{gap:12px;padding:10px 16px;}
-  #topnav{padding:0 16px;}
+}
+ 
+/* ── MOBILE (max 480px) ── */
+@media(max-width:480px){
+  #topnav{padding:0 12px;height:52px;}
+  .logo{font-size:13px;}
+  .nav-cta{padding:7px 14px;font-size:11.5px;}
+  .lang-btn{padding:4px 9px;font-size:11px;}
+  .hero-section{min-height:85vh;}
+  .hero-content{padding:64px 16px 48px;}
+  .hero-hl{font-size:clamp(26px,8vw,40px);letter-spacing:-1.5px;}
+  .hero-p{font-size:13.5px;}
+  .hero-ctas{flex-direction:column;gap:8px;}
+  .btn-hero-primary,.btn-hero-secondary{width:100%;text-align:center;justify-content:center;}
+  .hero-proof{flex-wrap:wrap;gap:10px;}
+  .trust-strip{display:none;}
+  .compare-col{padding:22px 16px;}
+  .compare-sticker{font-size:13px;padding:6px 12px;}
+  .compare-price-num{font-size:36px;}
+  .pcard-vis{height:220px;}
+  .hiw-step{padding:22px 16px;}
+  .abstract-inner{padding:44px 16px;}
+  .abstract-hl{font-size:clamp(24px,7vw,38px);letter-spacing:-1.5px;}
+  .testi-card{padding:20px 16px;}
+  .faq-inner,.testi-inner,.hiw-inner,.photo-inner{padding:40px 16px;}
+  .compare-inner{padding:40px 16px;}
+  .footer-top{grid-template-columns:1fr;padding:28px 16px 20px;}
+  .footer-brand{grid-column:auto;}
+  .footer-col{display:none;}
+  .footer-col:first-of-type{display:block;}
+  .footer-bottom{padding:14px 16px;}
+  .footer-legal{font-size:10px;}
+  .form-card{padding:22px 12px;border-radius:10px;}
+  .btn-go{font-size:13.5px;padding:14px 18px;}
+  .unlock-card{padding:24px 16px;}
+  .unlock-price{font-size:28px;}
+  div[style*="grid-template-columns:repeat(3"]{grid-template-columns:1fr!important;}
+  div[style*="height:220px"]{height:180px!important;}
+  div[style*="height:380px"]{height:260px!important;}
+  div[style*="height:340px"]{height:220px!important;}
 }
 @keyframes up{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+ 
+.compare-sticker{display:inline-block;font-family:var(--ui);font-weight:800;font-size:15px;letter-spacing:-.3px;padding:8px 16px;margin-bottom:28px;transform:rotate(-1.5deg);box-shadow:2px 3px 0 rgba(0,0,0,.25);}
+.compare-sticker.before{background:#FF3D2E;color:white;}
+.compare-sticker.after{background:#8CC63F;color:white;}
 </style>
 </head>
 <body>
@@ -336,7 +426,7 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
     <div class="hero-left">
       <div class="hero-tag" id="ld-eyebrow">Australia Visa Eligibility</div>
       <h1 class="hero-hl" id="ld-headline">Is Australia Actually <em>For You?</em></h1>
-      <p class="hero-p" id="ld-sub">Stop spending hours googling. In 5 minutes, get your eligibility verdict &#8212; free. Unlock the full audit for the details that matter.</p>
+      <p class="hero-p" id="ld-sub">Stop spending hours googling. In 5 minutes, get your eligibility verdict for free. Unlock the full audit for the details that matter.</p>
       <div class="hero-ctas">
         <button class="btn-hero-primary" onclick="go('whv-form')" id="ld-cta-whv">WHV Audit &#8594; Free verdict</button>
         <button class="btn-hero-secondary" onclick="go('skilled-form')" id="ld-cta-skl">Skilled Audit &#8594;</button>
@@ -372,12 +462,14 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
  
 <!-- SYDNEY STRIP -->
 <div style="height:380px;overflow:hidden;border-bottom:2px solid var(--ink);position:relative;">
-  <img src="hero.jpg" alt="Sydney Opera House and Harbour Bridge" style="width:100%;height:100%;object-fit:cover;object-position:center 55%;display:block;">
-  <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(8,8,8,.75) 0%,rgba(8,8,8,.3) 55%,transparent 100%);display:flex;align-items:center;padding:0 52px;">
-    <div style="max-width:520px;">
-      <div style="font-family:var(--ui);font-weight:700;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px;">Sydney, Australia</div>
-      <div style="font-family:var(--ui);font-weight:800;font-size:clamp(28px,4vw,54px);letter-spacing:-2px;line-height:1.0;text-transform:uppercase;color:white;">Your next chapter<br><span style="color:var(--gold);">starts here.</span></div>
-      <div style="font-size:16px;color:rgba(255,255,255,.65);margin-top:16px;line-height:1.65;">Know if you&#8217;re eligible before spending months on the wrong path.</div>
+  <img src="hero.jpg" alt="Sydney" style="width:100%;height:100%;object-fit:cover;object-position:center 40%;display:block;">
+  <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(8,8,8,.72) 0%,rgba(8,8,8,.28) 60%,transparent 100%);display:flex;align-items:center;justify-content:center;">
+    <div style="max-width:900px;width:100%;padding:0 48px;">
+      <div style="max-width:520px;">
+        <div style="font-family:var(--ui);font-weight:700;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px;">Sydney, Australia</div>
+        <div style="font-family:var(--ui);font-weight:800;font-size:clamp(28px,4vw,52px);letter-spacing:-2px;line-height:1.0;text-transform:uppercase;color:white;">Your next chapter<br><span style="color:var(--gold);">starts here.</span></div>
+        <div style="font-size:16px;color:rgba(255,255,255,.65);margin-top:16px;line-height:1.65;">Know if you&#8217;re eligible before spending months on the wrong path.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -389,22 +481,22 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
     <h2 class="compare-hl" id="pain-hl">You&#8217;ve Been Googling for Hours.<br>You Still Don&#8217;t Know.</h2>
     <div class="compare-grid">
       <div class="compare-col before">
-        <div class="compare-col-tag">Without VisaAudit</div>
+        <div class="compare-sticker before">Without VisaAudit</div>
         <ul class="compare-list">
-          <li id="pain1"><strong>DIBP website</strong> &#8212; 12 tabs, 4 PDFs, zero clear answer.</li>
-          <li id="pain2"><strong>Reddit threads</strong> &#8212; 8 different answers, half outdated.</li>
-          <li id="pain3"><strong>Migration agent</strong> &#8212; AU$300+ just to know if you&#8217;re eligible.</li>
+          <li id="pain1"><strong>DIBP website</strong> : 12 tabs, 4 PDFs, zero clear answer.</li>
+          <li id="pain2"><strong>Reddit threads</strong> : 8 different answers, half outdated.</li>
+          <li id="pain3"><strong>Migration agent</strong> : AU$300+ just to know if you&#8217;re eligible.</li>
           <li><strong>Result:</strong> still confused, weeks wasted, no decision.</li>
         </ul>
         <div class="compare-price"><div class="compare-price-num">AU$300+</div><div class="compare-price-label">Initial agent consultation</div></div>
       </div>
       <div class="compare-col after compare-col-divider">
-        <div class="compare-col-tag">With VisaAudit</div>
+        <div class="compare-sticker after">With VisaAudit</div>
         <ul class="compare-list">
           <li><strong>5 minutes.</strong> Clear eligibility verdict, free.</li>
           <li><strong>Red flags identified</strong> before you make a costly mistake.</li>
           <li><strong>Personalised PDF</strong> with checklist, risks and next steps.</li>
-          <li><strong>Result:</strong> you know exactly what to do &#8212; tonight.</li>
+          <li><strong>Result:</strong> you know exactly what to do. Tonight..</li>
         </ul>
         <div class="compare-price"><div class="compare-price-num">AU$59</div><div class="compare-price-label">Complete audit &bull; One-time</div></div>
       </div>
@@ -439,7 +531,7 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
           <div class="pcard-detail">417 &amp; 462 &middot; Ages 18&#8211;35</div>
         </div>
         <ul class="pcard-feats" id="whv-feats">
-          <li>Eligibility verdict &#8212; free, instant</li>
+          <li>Eligibility verdict, free and instant</li>
           <li>2nd &amp; 3rd year extension options explained</li>
           <li>Red flags detected &amp; clearly explained</li>
           <li>Criminal record &amp; health assessed</li>
@@ -458,7 +550,7 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
           <div class="pcard-detail">189 &middot; 190 &middot; 491</div>
         </div>
         <ul class="pcard-feats" id="skl-feats">
-          <li>Points score &#8212; verdict free, instant</li>
+          <li>Points score, verdict free and instant</li>
           <li>All 3 visa pathways ranked for your profile</li>
           <li>Current invitation rounds &amp; cutoff analysis</li>
           <li>Specific levers to improve your score</li>
@@ -482,7 +574,7 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
     <div class="hiw-steps">
       <div class="hiw-step"><div class="step-num">01</div><div class="step-title" id="step1-title">Fill the form</div><div class="step-desc" id="step1-desc">7 or 8 quick questions: nationality, age, experience, English level. Takes about 3 minutes.</div></div>
       <div class="hiw-step"><div class="step-num">02</div><div class="step-title" id="step2-title">AI analyses your profile</div><div class="step-desc" id="step2-desc">Checked against the latest official Australian immigration criteria. No vague answers.</div></div>
-      <div class="hiw-step"><div class="step-num">03</div><div class="step-title" id="step3-title">Free verdict &#8212; then unlock</div><div class="step-desc" id="step3-desc">Your eligibility verdict is free. Unlock the full PDF &#8212; risks, checklist, next steps &#8212; for AU$59.</div></div>
+      <div class="hiw-step"><div class="step-num">03</div><div class="step-title" id="step3-title">Free verdict, then unlock</div><div class="step-desc" id="step3-desc">Your eligibility verdict is free. Unlock the full PDF for AU$59 : risks, checklist, next steps..</div></div>
     </div>
   </div>
 </div>
@@ -492,7 +584,7 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
   <div class="abstract-bg"></div>
   <div class="abstract-inner">
     <div class="abstract-hl" id="fc-hl">Stop Guessing.<br>Get Your Answer.</div>
-    <div class="abstract-sub" id="fc-sub">Verdict free in 5 minutes. Full PDF report &#8212; risks, checklist, next steps &#8212; unlocked when you&#8217;re ready.</div>
+    <div class="abstract-sub" id="fc-sub">Verdict free in 5 minutes. Full PDF report with risks, checklist and next steps, unlocked when you&#8217;re ready.</div>
     <div class="abstract-btns">
       <button class="btn-abs-p" onclick="go('whv-form')" id="fc-btn-whv">WHV Audit &#8594; Free verdict</button>
       <button class="btn-abs-s" onclick="go('skilled-form')" id="fc-btn-skl">Skilled Audit &#8594;</button>
@@ -506,7 +598,7 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
     <div style="font-family:var(--ui);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu);margin-bottom:14px;" id="testi-label">What people say</div>
     <div class="testi-hl" id="testi-hl">Real Audits. Real People.</div>
     <div class="testi-grid">
-      <div class="testi-card whv-testi"><div class="testi-stars">5/5</div><div class="testi-text">&#8220;The free verdict was already worth it &#8212; then I unlocked the full report and had every answer I needed. Clear, direct, no BS.&#8221;</div><div class="testi-author"><div class="testi-av whv">M.</div><div><div class="testi-name">Marie L.</div><div class="testi-detail">French, WHV 417</div></div></div></div>
+      <div class="testi-card whv-testi"><div class="testi-stars">5/5</div><div class="testi-text">&#8220;The free verdict was already worth it. I unlocked the full report and had every answer I needed. Clear, direct, no BS.&#8221;</div><div class="testi-author"><div class="testi-av whv">M.</div><div><div class="testi-name">Marie L.</div><div class="testi-detail">French, WHV 417</div></div></div></div>
       <div class="testi-card whv-testi"><div class="testi-stars">5/5</div><div class="testi-text">&#8220;Better than two hours on Reddit. The PDF breakdown told me exactly where my application was strong and where I needed to fix things.&#8221;</div><div class="testi-author"><div class="testi-av whv">J.</div><div><div class="testi-name">Jiwon K.</div><div class="testi-detail">Korean, WHV 417</div></div></div></div>
       <div class="testi-card skl-testi"><div class="testi-stars">5/5</div><div class="testi-text">&#8220;Showed I was 5 points short and exactly how to close the gap. Saved me months of guessing and a fortune in agent fees.&#8221;</div><div class="testi-author"><div class="testi-av skl">C.</div><div><div class="testi-name">Carlos M.</div><div class="testi-detail">Brazilian, Skilled 189</div></div></div></div>
     </div>
@@ -535,8 +627,8 @@ footer{padding:22px 32px;background:var(--blue);display:flex;align-items:center;
   <div class="faq-inner">
     <div style="font-family:var(--ui);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu);margin-bottom:14px;" id="faq-label">Questions</div>
     <div class="faq-hl" id="faq-hl">We Know What You&#8217;re Wondering.</div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span id="fq1">What&#8217;s free and what&#8217;s paid?</span><span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner" id="fa1">Your <strong>eligibility verdict is free</strong> &#8212; you&#8217;ll know instantly if you&#8217;re Eligible, Conditional or Not Eligible. To access the full report &#8212; risks, documents checklist, next steps and personalised recommendations &#8212; you unlock for AU$59 (WHV) or AU$199 (Skilled).</div></div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span id="fq2">Is this a replacement for a migration agent?</span><span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner" id="fa2">No &#8212; we&#8217;re straight about that. This audit tells you whether you&#8217;re likely eligible and flags red flags. For a complex application, a <strong>registered MARA agent</strong> is the right move. Think of this as the essential first step.</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span id="fq1">What&#8217;s free and what&#8217;s paid?</span><span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner" id="fa1">Your <strong>eligibility verdict is free</strong> : you&#8217;ll know instantly if you&#8217;re Eligible, Conditional or Not Eligible. To access the full report with risks, documents checklist, next steps and personalised recommendations. You unlock for AU$59 (WHV) or AU$199 (Skilled).</div></div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span id="fq2">Is this a replacement for a migration agent?</span><span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner" id="fa2">We'll be straight about that: no. This audit tells you whether you&#8217;re likely eligible and flags red flags. For a complex application, a <strong>registered MARA agent</strong> is the right move. Think of this as the essential first step.</div></div></div>
     <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span id="fq3">How accurate is the audit?</span><span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner" id="fa3">Our AI is trained on <strong>latest official DIBP criteria</strong> and SkillSelect data. Immigration rules change frequently, so always verify critical details with a MARA agent before applying.</div></div></div>
     <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span id="fq4">What if I&#8217;m not eligible?</span><span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner" id="fa4">The audit explains <strong>why</strong> and suggests alternative pathways where possible. <strong>Not eligible today doesn&#8217;t mean not eligible in 12 months.</strong></div></div></div>
     <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span id="fq5">Is my data secure?</span><span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner" id="fa5">We don&#8217;t store your profile data after the audit. Your email is only used to deliver the PDF. We don&#8217;t sell or share your information.</div></div></div>
