@@ -1188,7 +1188,7 @@ const SKL_STEPS = [
   ]},
   {phase:'Expression of Interest', steps:[
     {title:'Create your SkillSelect EOI', desc:'Go to skillselect.immi.homeaffairs.gov.au. Fill in your profile, points claim, occupation, skills assessment reference. Maximise every category.', time:'2-3 hours', cost:'Free', url:'https://skillselect.immi.homeaffairs.gov.au'},
-    {title:'Apply for state nomination (190/491)', desc:'Research state government occupation lists. Apply via your target state's migration portal. Requirements and processing times vary widely.', time:'1-6 months', cost:'Free'},
+    {title:'Apply for state nomination (190/491)', desc:'Research state government occupation lists. Apply via your target state migration portal. Requirements and processing times vary widely.', time:'1-6 months', cost:'Free'},
     {title:'Wait for invitation from SkillSelect', desc:'Invitations are issued fortnightly. Monitor your SkillSelect account. Your ranking depends on points score and when you submitted your EOI.', time:'Weeks to years', cost:'Free'},
   ]},
   {phase:'Visa application', steps:[
@@ -1248,7 +1248,7 @@ function buildDashboard(){
       if(step.cost) meta += '<span>&#128176; '+step.cost+'</span>';
       if(step.url) meta += '<span><a href="'+step.url+'" target="_blank" style="color:var(--blue);font-weight:700;">Open link &#8594;</a></span>';
  
-      div.innerHTML = \`
+      div.innerHTML = `
         <div class="dash-step-num">\${idx+1}</div>
         <div class="dash-step-content">
           <div class="dash-step-title">\${step.title}</div>
@@ -1260,7 +1260,7 @@ function buildDashboard(){
             \${(isDone||isInProgress) ? '<button onclick="setStepStatus('+idx+','')" style="padding:4px 10px;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.3px;background:transparent;border:1.5px solid var(--b);border-radius:2px;cursor:pointer;color:var(--mu);">Reset</button>' : ''}
           </div>
         </div>
-      \`;
+      `;
       stepsEl.appendChild(div);
     });
     phaseEl.appendChild(stepsEl);
@@ -1299,7 +1299,7 @@ function openDashboard(){
   buildDashboard();
   go('dashboard-section');
 }
- 
+}
 </script>
 </body>
 </html>
