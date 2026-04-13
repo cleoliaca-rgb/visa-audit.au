@@ -1130,7 +1130,7 @@ function buildPrompt(){
  
 /* ── ANALYSIS ── */
 async function runAnalysis(){
-  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');s.style.display='';});
   var proc=document.getElementById('processing-section');
   if(proc){proc.style.display='flex';proc.classList.add('active');}
   window.scrollTo(0,0);
@@ -1200,7 +1200,7 @@ window.addEventListener('load',()=>{
  
 function renderResults(){
   var t=Object.assign({},T['en'],T[lang]||{},TL[lang]||{});
-  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');s.style.display='';});
   var rsec=document.getElementById('results-section');
   if(rsec){rsec.style.display='block';rsec.classList.add('active');}
   window.scrollTo(0,0);
