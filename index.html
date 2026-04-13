@@ -749,6 +749,7 @@ footer{background:var(--ink);border-top:2px solid var(--ink);}
         <div class="pill"><input type="radio" name="seas" id="s2" value="Not decided yet"><label for="s2">Not sure</label></div>
       </div></div>
     <div class="field"><label id="lb-email">Your email address</label><input type="email" id="whv-email" placeholder="you@example.com"></div>
+    <div id="whv-err" style="color:#AA1A1A;font-family:var(--ui);font-size:12px;font-weight:600;margin-bottom:8px;"></div>
     <button class="btn-go" onclick="submitWhv()"><span id="whv-go-lbl">Get Free Verdict &#8594;</span><span></span></button>
     <div class="form-guarantee">Free verdict &bull; Unlock full PDF for AU$59 &bull; One-time</div>
   </div></div>
@@ -786,6 +787,7 @@ footer{background:var(--ink);border-top:2px solid var(--ink);}
         <div class="pill"><input type="radio" name="part" id="pt2" value="Partner without skilled occupation"><label for="pt2">Yes, other</label></div>
       </div></div>
     <div class="field"><label id="lb-skle">Your email address</label><input type="email" id="skl-email" placeholder="you@example.com"></div>
+    <div id="skl-err" style="color:#AA1A1A;font-family:var(--ui);font-size:12px;font-weight:600;margin-bottom:8px;"></div>
     <button class="btn-go" onclick="submitSkilled()"><span id="skl-go-lbl">Get Free Verdict &#8594;</span><span></span></button>
     <div class="form-guarantee">Free verdict &bull; Unlock full PDF for AU$199 &bull; One-time</div>
   </div></div>
@@ -1019,27 +1021,52 @@ function toggleFaq(btn){const item=btn.closest('.faq-item');item.classList.toggl
  
 /* ── FORMS ── */
 function submitWhv(){
-  const nat=document.getElementById('whv-nat').value,dob=document.getElementById('whv-dob').value;
-  const prev=document.querySelector('input[name="prev"]:checked')?.value,crim=document.querySelector('input[name="crim"]:checked')?.value;
-  const hlth=document.querySelector('input[name="hlth"]:checked')?.value,seas=document.querySelector('input[name="seas"]:checked')?.value;
+  const nat=document.getElementById('whv-nat').value;
+  const dob=document.getElementById('whv-dob').value;
+  const prev=(document.querySelector('input[name="prev"]:checked')||{}).value;
+  const crim=(document.querySelector('input[name="crim"]:checked')||{}).value;
+  const hlth=(document.querySelector('input[name="hlth"]:checked')||{}).value;
+  const seas=(document.querySelector('input[name="seas"]:checked')||{}).value;
   const email=document.getElementById('whv-email').value;
-  if(!nat||!dob||!prev||!crim||!hlth||!seas||!email){alert('Please fill in all fields.');return;}
+  const errEl=document.getElementById('whv-err');
+  const missing=[];
+  if(!nat)missing.push('nationality');
+  if(!dob)missing.push('date of birth');
+  if(!prev)missing.push('previous WHV');
+  if(!crim)missing.push('criminal record');
+  if(!hlth)missing.push('health');
+  if(!seas)missing.push('regional work');
+  if(!email)missing.push('email');
+  if(missing.length){if(errEl)errEl.textContent='Please fill in: '+missing.join(', ')+'.';return;}
+  if(errEl)errEl.textContent='';
   const bd=new Date(dob),now=new Date();let age=now.getFullYear()-bd.getFullYear();
   if(now.getMonth()<bd.getMonth()||(now.getMonth()===bd.getMonth()&&now.getDate()<bd.getDate()))age--;
-  flow='whv';userEmail=email;fd={nat,dob,age,prev,crim,hlth,seas,email};
-  sessionStorage.setItem('va',JSON.stringify({flow,fd,lang}));
-  DEMO_MODE?runAnalysis():(window.location.href=STRIPE_WHV+'?ref='+Date.now());
+  flow='whv';userEmail=email;fd={nat,dob,age,prev,crim,hlth:hlth,seas,email};
+  runAnalysis();
 }
 function submitSkilled(){
-  const occ=document.getElementById('skl-occ').value,age=document.getElementById('skl-age').value,exp=document.getElementById('skl-exp').value,email=document.getElementById('skl-email').value;
-  if(!occ||!age||!exp||!email){alert('Please fill in occupation, age, experience and email.');return;}
+  const occ=document.getElementById('skl-occ').value;
+  const age=document.getElementById('skl-age').value;
+  const exp=document.getElementById('skl-exp').value;
+  const engT=document.getElementById('skl-eng-t').value;
+  const engS=document.getElementById('skl-eng-s').value;
+  const qualL=document.getElementById('skl-qual-l').value;
+  const qualC=document.getElementById('skl-qual-c').value;
+  const state=document.getElementById('skl-state').value;
+  const part=(document.querySelector('input[name="part"]:checked')||{}).value;
+  const email=document.getElementById('skl-email').value;
+  const errEl=document.getElementById('skl-err');
+  const missing=[];
+  if(!occ)missing.push('occupation');
+  if(!age)missing.push('age');
+  if(!exp)missing.push('experience');
+  if(!email)missing.push('email');
+  if(missing.length){if(errEl)errEl.textContent='Please fill in: '+missing.join(', ')+'.';return;}
+  if(errEl)errEl.textContent='';
   flow='skilled';userEmail=email;
-  fd={occ,age,exp,engT:document.getElementById('skl-eng-t').value||'Not specified',engS:document.getElementById('skl-eng-s').value||'Not provided',qualL:document.getElementById('skl-qual-l').value||'Not specified',qualC:document.getElementById('skl-qual-c').value||'Not specified',state:document.getElementById('skl-state').value,part:document.querySelector('input[name="part"]:checked')?.value||'No partner',email};
-  sessionStorage.setItem('va',JSON.stringify({flow,fd,lang}));
-  DEMO_MODE?runAnalysis():(window.location.href=STRIPE_SKILLED+'?ref='+Date.now());
+  fd={occ,age:parseInt(age),exp:parseInt(exp),engT:engT||'Not specified',engS:engS||'N/A',qualL:qualL||'Not specified',qualC:qualC||'Not specified',state:state||'No preference',part:part||'Not specified',email};
+  runAnalysis();
 }
- 
-/* ── PROMPT ── */
 function buildPrompt(){
   const rl=LANG_NAMES[lang]||'English';
   if(flow==='whv'){
