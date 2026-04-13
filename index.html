@@ -711,13 +711,9 @@ footer{background:var(--ink);border-top:2px solid var(--ink);}
         <option value="Finnish">Finland</option><option value="Swiss">Switzerland</option>
         <option value="Austrian">Austria</option><option value="Polish">Poland</option>
         <option value="Czech">Czech Republic</option><option value="Hungarian">Hungary</option>
-        <option value="Slovak">Slovakia</option><option value="Slovenian">Slovenia</option>
-        <option value="Estonian">Estonia</option><option value="Latvian">Latvia</option>
-        <option value="Lithuanian">Lithuania</option><option value="Maltese">Malta</option>
-        <option value="Cypriot">Cyprus</option><option value="Canadian">Canada</option>
-        <option value="American">United States</option><option value="Japanese">Japan</option>
-        <option value="South Korean">South Korea</option><option value="Taiwanese">Taiwan</option>
-        <option value="Hong Konger">Hong Kong</option><option value="Israeli">Israel</option>
+        <option value="Canadian">Canada</option><option value="American">United States</option>
+        <option value="Japanese">Japan</option><option value="South Korean">South Korea</option>
+        <option value="Taiwanese">Taiwan</option><option value="Hong Konger">Hong Kong</option>
         <option value="Argentine">Argentina</option><option value="Chilean">Chile</option>
         <option value="Indonesian">Indonesia</option><option value="Malaysian">Malaysia</option>
         <option value="Thai">Thailand</option><option value="Vietnamese">Vietnam</option>
@@ -725,11 +721,30 @@ footer{background:var(--ink);border-top:2px solid var(--ink);}
         <option value="Turkish">Turkey</option><option value="Other">Other</option>
       </select></div>
     <div class="field"><label id="lb-dob">Date of birth</label><input type="date" id="whv-dob"></div>
+    <div class="field"><label>Current profession / occupation</label><input type="text" id="whv-job" placeholder="e.g. Designer, Teacher, Engineer..."></div>
+    <div class="field"><label>English level</label>
+      <div class="pills">
+        <div class="pill"><input type="radio" name="eng" id="eng0" value="Native or fluent (C1/C2)"><label for="eng0">Fluent</label></div>
+        <div class="pill"><input type="radio" name="eng" id="eng1" value="Intermediate (B1/B2)"><label for="eng1">Intermediate</label></div>
+        <div class="pill"><input type="radio" name="eng" id="eng2" value="Basic (A1/A2)"><label for="eng2">Basic</label></div>
+      </div></div>
+    <div class="field"><label>Available budget for the trip</label>
+      <div class="pills">
+        <div class="pill"><input type="radio" name="budget" id="b0" value="Less than AUD 5,000"><label for="b0">&lt;AU$5k</label></div>
+        <div class="pill"><input type="radio" name="budget" id="b1" value="AUD 5,000 to 10,000"><label for="b1">AU$5-10k</label></div>
+        <div class="pill"><input type="radio" name="budget" id="b2" value="More than AUD 10,000"><label for="b2">&gt;AU$10k</label></div>
+      </div></div>
     <div class="field"><label id="lb-prev">Previous WHV in Australia?</label>
       <div class="pills">
         <div class="pill"><input type="radio" name="prev" id="p0" value="No, first WHV"><label for="p0">No, first time</label></div>
         <div class="pill"><input type="radio" name="prev" id="p1" value="Yes, once (12 months)"><label for="p1">Yes, once</label></div>
         <div class="pill"><input type="radio" name="prev" id="p2" value="Yes, twice (24 months)"><label for="p2">Yes, twice</label></div>
+      </div></div>
+    <div class="field"><label>Have you been to Australia before?</label>
+      <div class="pills">
+        <div class="pill"><input type="radio" name="been" id="been0" value="Never been to Australia"><label for="been0">Never</label></div>
+        <div class="pill"><input type="radio" name="been" id="been1" value="Yes, as a tourist"><label for="been1">As tourist</label></div>
+        <div class="pill"><input type="radio" name="been" id="been2" value="Yes, on another visa"><label for="been2">Other visa</label></div>
       </div></div>
     <div class="field"><label id="lb-crim">Criminal record?</label>
       <div class="pills">
@@ -742,14 +757,20 @@ footer{background:var(--ink);border-top:2px solid var(--ink);}
         <div class="pill"><input type="radio" name="hlth" id="h0" value="No health conditions"><label for="h0">No</label></div>
         <div class="pill"><input type="radio" name="hlth" id="h1" value="Yes, has health conditions"><label for="h1">Yes</label></div>
       </div></div>
+    <div class="field"><label>Planned duration of stay</label>
+      <div class="pills">
+        <div class="pill"><input type="radio" name="duration" id="d0" value="1 to 6 months"><label for="d0">1-6 months</label></div>
+        <div class="pill"><input type="radio" name="duration" id="d1" value="6 to 12 months"><label for="d1">6-12 months</label></div>
+        <div class="pill"><input type="radio" name="duration" id="d2" value="12+ months (with extension)"><label for="d2">12+ months</label></div>
+      </div></div>
     <div class="field"><label id="lb-seas">Planning regional work for year 2/3?</label>
       <div class="pills">
         <div class="pill"><input type="radio" name="seas" id="s0" value="Yes, planning regional work for year 2/3"><label for="s0">Yes</label></div>
         <div class="pill"><input type="radio" name="seas" id="s1" value="No extension planned"><label for="s1">No</label></div>
         <div class="pill"><input type="radio" name="seas" id="s2" value="Not decided yet"><label for="s2">Not sure</label></div>
       </div></div>
+    <div class="field"><label>Planned departure date</label><input type="month" id="whv-depart" placeholder="e.g. 2025-09"></div>
     <div class="field"><label id="lb-email">Your email address</label><input type="email" id="whv-email" placeholder="you@example.com"></div>
-    <div id="whv-err" style="color:#AA1A1A;font-family:var(--ui);font-size:12px;font-weight:600;margin-bottom:8px;"></div>
     <button class="btn-go" onclick="submitWhv()"><span id="whv-go-lbl">Get Free Verdict &#8594;</span><span></span></button>
     <div class="form-guarantee">Free verdict &bull; Unlock full PDF for AU$59 &bull; One-time</div>
   </div></div>
@@ -1023,25 +1044,31 @@ function toggleFaq(btn){const item=btn.closest('.faq-item');item.classList.toggl
 function submitWhv(){
   var nat=document.getElementById('whv-nat').value;
   var dob=document.getElementById('whv-dob').value;
-  var prev=''; var el=document.querySelector('input[name="prev"]:checked'); if(el) prev=el.value;
-  var crim=''; var el2=document.querySelector('input[name="crim"]:checked'); if(el2) crim=el2.value;
-  var hlth=''; var el3=document.querySelector('input[name="hlth"]:checked'); if(el3) hlth=el3.value;
-  var seas=''; var el4=document.querySelector('input[name="seas"]:checked'); if(el4) seas=el4.value;
+  var job=document.getElementById('whv-job').value||'Not specified';
+  var depart=document.getElementById('whv-depart').value||'Not specified';
+  var eng=''; var ee=document.querySelector('input[name="eng"]:checked'); if(ee) eng=ee.value;
+  var budget=''; var be=document.querySelector('input[name="budget"]:checked'); if(be) budget=be.value;
+  var prev=''; var pe=document.querySelector('input[name="prev"]:checked'); if(pe) prev=pe.value;
+  var been=''; var be2=document.querySelector('input[name="been"]:checked'); if(be2) been=be2.value;
+  var crim=''; var ce=document.querySelector('input[name="crim"]:checked'); if(ce) crim=ce.value;
+  var hlth=''; var he=document.querySelector('input[name="hlth"]:checked'); if(he) hlth=he.value;
+  var duration=''; var de=document.querySelector('input[name="duration"]:checked'); if(de) duration=de.value;
+  var seas=''; var se=document.querySelector('input[name="seas"]:checked'); if(se) seas=se.value;
   var email=document.getElementById('whv-email').value;
   var err=document.getElementById('whv-err');
   var missing=[];
   if(!nat) missing.push('nationality');
   if(!dob) missing.push('date of birth');
-  if(!prev) missing.push('previous WHV answer');
-  if(!crim) missing.push('criminal record answer');
-  if(!hlth) missing.push('health answer');
-  if(!seas) missing.push('regional work answer');
   if(!email) missing.push('email');
-  if(missing.length>0){ if(err) err.textContent='Missing: '+missing.join(', '); return; }
+  if(!prev) missing.push('previous WHV');
+  if(!crim) missing.push('criminal record');
+  if(!hlth) missing.push('health');
+  if(missing.length>0){ if(err) err.textContent='Please fill in: '+missing.join(', '); return; }
   if(err) err.textContent='';
   var bd=new Date(dob); var now=new Date(); var age=now.getFullYear()-bd.getFullYear();
   if(now.getMonth()<bd.getMonth()||(now.getMonth()===bd.getMonth()&&now.getDate()<bd.getDate())) age--;
-  flow='whv'; userEmail=email; fd={nat:nat,dob:dob,age:age,prev:prev,crim:crim,hlth:hlth,seas:seas,email:email};
+  flow='whv'; userEmail=email;
+  fd={nat:nat,dob:dob,age:age,job:job,eng:eng,budget:budget,prev:prev,been:been||'Not specified',crim:crim,hlth:hlth,duration:duration||'Not specified',seas:seas||'Not decided',depart:depart,email:email};
   runAnalysis();
 }
 function submitSkilled(){
@@ -1070,7 +1097,7 @@ function submitSkilled(){
 function buildPrompt(){
   const rl=LANG_NAMES[lang]||'English';
   if(flow==='whv'){
-    return 'You are a senior Australian immigration advisor. Produce a thorough, structured visa eligibility audit in '+rl+' for this applicant. Be direct, warm, human — no jargon. Be highly specific and actionable based on their exact profile.\n\nPROFILE:\n- Nationality: '+fd.nat+'\n- DOB: '+fd.dob+' (age '+fd.age+')\n- Previous WHV: '+fd.prev+'\n- Criminal record: '+fd.crim+'\n- Health conditions: '+fd.hlth+'\n- Regional work planned: '+fd.seas+'\n\nWrite ALL these sections (translate EVERY header to '+rl+'):\n\n## ELIGIBILITY VERDICT\nClear verdict: Eligible / Conditional / Not Eligible. Explain WHY in 3 sentences specific to their nationality and profile.\n\n## PROFILE ANALYSIS\nStrengths and weaknesses of this profile. What works in their favour, what could be an issue. Be specific to their exact answers.\n\n## NATIONALITY CONDITIONS\nDetailed bilateral agreement for '+fd.nat+': quotas, age limit (18-30 or 18-35), whether 417 or 462 applies, nationality-specific rules. Current validity.\n\n## YEAR 2 & YEAR 3 EXTENSION OPTIONS\nExact requirements for 2nd year (88 days specified work) and 3rd year extensions. Specific qualifying work categories: agriculture, horticulture, construction, mining, bushfire recovery, etc. Concrete job examples. Approved regional zones. How to prove it (form 1263, employer declaration).\n\n## HEALTH & CHARACTER REQUIREMENTS\nBased on their criminal record: '+fd.crim+' and health: '+fd.hlth+'. What this means specifically. Medical checks required, conditions assessed, character requirements. If issues exist, explain pathways and what to prepare.\n\n## FINANCIAL REQUIREMENTS\nMinimum funds required (approx AUD 5,000). Proof of funds accepted. Health insurance requirements. Visa application fee (approx AUD 650). Total estimated cost.\n\n## DOCUMENTS CHECKLIST\nComplete grouped checklist: IDENTITY (passport, photos), FINANCES (bank statements), HEALTH (insurance, medical if needed), CHARACTER (police certificate if needed), NATIONALITY-SPECIFIC docs. Be exhaustive.\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\nNumbered roadmap from TODAY to landing in Australia:\n1. Create ImmiAccount on immi.homeaffairs.gov.au\n2. Gather all documents (list what, where to get each)\n3. Submit online application (what to fill, what to upload)\n4. Health examinations if required (where, how long, cost)\n5. Await grant (typical wait time)\n6. Prepare departure (what to organise before flying)\n7. First entry and activation\nFor each step: exact action, where to do it, realistic timeframe, cost. Make it a genuine roadmap.\n\n## TIMELINE & REALISTIC EXPECTATIONS\nTypical processing time for '+fd.nat+' applicants. Best, realistic and worst case. Seasonal peaks. When to apply relative to departure date.\n\n## IF NOT ELIGIBLE — ALTERNATIVE PATHWAYS\nIf blockers exist, what needs to change. Alternative visas: student visa + work rights, Graduate visa, Skilled visa. Do not leave them without options.\n\n## IMPORTANT NOTICE\nInformational only, not legal migration advice. For complex cases consult a MARA agent (mara.gov.au). Verify on immi.homeaffairs.gov.au.';
+    return 'You are a senior Australian immigration advisor. Produce a thorough, structured visa eligibility audit in '+rl+' for this applicant. Be direct, warm, human — no jargon. Be highly specific and actionable based on their exact profile.\n\nPROFILE:\n- Nationality: '+fd.nat+'\n- Age: '+fd.age+' (DOB: '+fd.dob+')\n- Profession: '+fd.job+'\n- English level: '+fd.eng+'\n- Budget available: '+fd.budget+'\n- Previous visits to Australia: '+fd.been+'\n- Previous WHV: '+fd.prev+'\n- Planned stay: '+fd.duration+'\n- Planned departure: '+fd.depart+'\n- Regional work planned: '+fd.seas+'\n- Criminal record: '+fd.crim+'\n- Health conditions: '+fd.hlth+'\n\nWrite ALL these sections (translate EVERY header to '+rl+'):\n\n## ELIGIBILITY VERDICT\nClear verdict: Eligible / Conditional / Not Eligible. Explain WHY in 3 sentences specific to their nationality and profile.\n\n## PROFILE ANALYSIS\nStrengths and weaknesses of this profile. What works in their favour, what could be an issue. Be specific to their exact answers.\n\n## NATIONALITY CONDITIONS\nDetailed bilateral agreement for '+fd.nat+': quotas, age limit (18-30 or 18-35), whether 417 or 462 applies, nationality-specific rules. Current validity.\n\n## YEAR 2 & YEAR 3 EXTENSION OPTIONS\nExact requirements for 2nd year (88 days specified work) and 3rd year extensions. Specific qualifying work categories: agriculture, horticulture, construction, mining, bushfire recovery, etc. Concrete job examples. Approved regional zones. How to prove it (form 1263, employer declaration).\n\n## HEALTH & CHARACTER REQUIREMENTS\nBased on their criminal record: '+fd.crim+' and health: '+fd.hlth+'. What this means specifically. Medical checks required, conditions assessed, character requirements. If issues exist, explain pathways and what to prepare.\n\n## FINANCIAL REQUIREMENTS\nMinimum funds required (approx AUD 5,000). Proof of funds accepted. Health insurance requirements. Visa application fee (approx AUD 650). Total estimated cost.\n\n## DOCUMENTS CHECKLIST\nComplete grouped checklist: IDENTITY (passport, photos), FINANCES (bank statements), HEALTH (insurance, medical if needed), CHARACTER (police certificate if needed), NATIONALITY-SPECIFIC docs. Be exhaustive.\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\nNumbered roadmap from TODAY to landing in Australia:\n1. Create ImmiAccount on immi.homeaffairs.gov.au\n2. Gather all documents (list what, where to get each)\n3. Submit online application (what to fill, what to upload)\n4. Health examinations if required (where, how long, cost)\n5. Await grant (typical wait time)\n6. Prepare departure (what to organise before flying)\n7. First entry and activation\nFor each step: exact action, where to do it, realistic timeframe, cost. Make it a genuine roadmap.\n\n## TIMELINE & REALISTIC EXPECTATIONS\nTypical processing time for '+fd.nat+' applicants. Best, realistic and worst case. Seasonal peaks. When to apply relative to departure date.\n\n## IF NOT ELIGIBLE — ALTERNATIVE PATHWAYS\nIf blockers exist, what needs to change. Alternative visas: student visa + work rights, Graduate visa, Skilled visa. Do not leave them without options.\n\n## IMPORTANT NOTICE\nInformational only, not legal migration advice. For complex cases consult a MARA agent (mara.gov.au). Verify on immi.homeaffairs.gov.au.';
   }
   return 'You are a senior Australian immigration advisor. Produce a thorough, structured skilled migration audit in '+rl+' for this applicant. Be direct, warm, specific and highly actionable.\n\nPROFILE:\n- Occupation: '+fd.occ+'\n- Age: '+fd.age+'\n- Experience: '+fd.exp+' years\n- English: '+fd.engT+' — '+fd.engS+'\n- Qualification: '+fd.qualL+' ('+fd.qualC+')\n- Preferred state: '+fd.state+'\n- Partner: '+fd.part+'\n\nWrite ALL these sections (translate EVERY header to '+rl+'):\n\n## ELIGIBILITY VERDICT\nClear verdict: Eligible / Conditional / Not Eligible for skilled migration. Which visa(s) and why.\n\n## POINTS BREAKDOWN\nDetailed SkillSelect points table for each category: Age, English, Overseas experience, Australian experience, Qualification, Australian study, Partner skills, State nomination, Community language. Give a precise TOTAL RANGE (e.g. 75-80 pts) based on their actual answers.\n\n## YOUR VISA PATHWAYS\nRank 189, 190, 491 by likelihood: 189 independent (points needed, realistic?), 190 state nomination (which states nominate this occupation, current demand), 491 regional (areas to consider). For each: honest assessment, current cutoffs if known.\n\n## OCCUPATION ASSESSMENT\nWhich assessing authority handles '+fd.occ+' (Engineers Australia, VETASSESS, ACS, AHPRA, etc.). What the assessment involves, duration, cost. Whether their qualification from '+fd.qualC+' is likely recognised. Red flags or advantages.\n\n## CURRENT INVITATION LANDSCAPE\nRecent SkillSelect cutoff scores for their occupation category. Whether occupation is on MLTSSL or Short-term list. Invitation frequency. Honest fluctuation caveat.\n\n## HOW TO IMPROVE YOUR SCORE\nSpecific levers for this profile with points impact: English improvement, extra experience years, partner skills, Australian study (5 pts), state nomination targets. Quantify each.\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\nNumbered roadmap from today to PR:\n1. Occupation assessment (body, how to apply, timeline, cost)\n2. English test (which test, target score, booking)\n3. Lodge EOI in SkillSelect (how, what to include)\n4. State nomination application if 190/491 (portal, documents)\n5. Receive invitation (what triggers it, 60-day window)\n6. Lodge visa application (checklist, fees AUD 4,640+)\n7. Health checks (where, what involved)\n8. Police certificates (which countries, how to obtain)\n9. Grant and first entry requirements\nFor each step: exact action, URL/office, timeframe, cost.\n\n## REALISTIC TIMELINE\nFull honest timeline: occupation assessment (X months), English test, EOI wait (X-X months), visa processing (X-X months). Best case / realistic / worst case totals.\n\n## FINANCIAL ROADMAP\nAll costs: occupation assessment, English test, visa application (AUD 4,640+), health checks, police certificates. Total budget range.\n\n## IF NOT ELIGIBLE — ALTERNATIVE PATHWAYS\nIf points too low or occupation not listed: alternatives including 485 Graduate visa, WHV to build Australian experience, employer sponsorship (482), regional pathways.\n\n## IMPORTANT NOTICE\nInformational only, not legal migration advice. MARA agent strongly recommended for the application (mara.gov.au). Verify on immi.homeaffairs.gov.au and SkillSelect Trends.';
  
