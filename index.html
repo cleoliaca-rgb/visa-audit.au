@@ -1047,6 +1047,40 @@ function buildPrompt(){
   }
   return 'You are a senior Australian immigration advisor. Produce a thorough, structured skilled migration audit in '+rl+' for this applicant. Be direct, warm, specific and highly actionable.\n\nPROFILE:\n- Occupation: '+fd.occ+'\n- Age: '+fd.age+'\n- Experience: '+fd.exp+' years\n- English: '+fd.engT+' — '+fd.engS+'\n- Qualification: '+fd.qualL+' ('+fd.qualC+')\n- Preferred state: '+fd.state+'\n- Partner: '+fd.part+'\n\nWrite ALL these sections (translate EVERY header to '+rl+'):\n\n## ELIGIBILITY VERDICT\nClear verdict: Eligible / Conditional / Not Eligible for skilled migration. Which visa(s) and why.\n\n## POINTS BREAKDOWN\nDetailed SkillSelect points table for each category: Age, English, Overseas experience, Australian experience, Qualification, Australian study, Partner skills, State nomination, Community language. Give a precise TOTAL RANGE (e.g. 75-80 pts) based on their actual answers.\n\n## YOUR VISA PATHWAYS\nRank 189, 190, 491 by likelihood: 189 independent (points needed, realistic?), 190 state nomination (which states nominate this occupation, current demand), 491 regional (areas to consider). For each: honest assessment, current cutoffs if known.\n\n## OCCUPATION ASSESSMENT\nWhich assessing authority handles '+fd.occ+' (Engineers Australia, VETASSESS, ACS, AHPRA, etc.). What the assessment involves, duration, cost. Whether their qualification from '+fd.qualC+' is likely recognised. Red flags or advantages.\n\n## CURRENT INVITATION LANDSCAPE\nRecent SkillSelect cutoff scores for their occupation category. Whether occupation is on MLTSSL or Short-term list. Invitation frequency. Honest fluctuation caveat.\n\n## HOW TO IMPROVE YOUR SCORE\nSpecific levers for this profile with points impact: English improvement, extra experience years, partner skills, Australian study (5 pts), state nomination targets. Quantify each.\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\nNumbered roadmap from today to PR:\n1. Occupation assessment (body, how to apply, timeline, cost)\n2. English test (which test, target score, booking)\n3. Lodge EOI in SkillSelect (how, what to include)\n4. State nomination application if 190/491 (portal, documents)\n5. Receive invitation (what triggers it, 60-day window)\n6. Lodge visa application (checklist, fees AUD 4,640+)\n7. Health checks (where, what involved)\n8. Police certificates (which countries, how to obtain)\n9. Grant and first entry requirements\nFor each step: exact action, URL/office, timeframe, cost.\n\n## REALISTIC TIMELINE\nFull honest timeline: occupation assessment (X months), English test, EOI wait (X-X months), visa processing (X-X months). Best case / realistic / worst case totals.\n\n## FINANCIAL ROADMAP\nAll costs: occupation assessment, English test, visa application (AUD 4,640+), health checks, police certificates. Total budget range.\n\n## IF NOT ELIGIBLE — ALTERNATIVE PATHWAYS\nIf points too low or occupation not listed: alternatives including 485 Graduate visa, WHV to build Australian experience, employer sponsorship (482), regional pathways.\n\n## IMPORTANT NOTICE\nInformational only, not legal migration advice. MARA agent strongly recommended for the application (mara.gov.au). Verify on immi.homeaffairs.gov.au and SkillSelect Trends.';
  
+ 
+function runAnalysis(){
+  go('processing-section');
+  const prompt = buildPrompt();
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':API_KEY,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:2000,
+      messages:[{role:'user',content:prompt}]
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    if(data.content&&data.content[0]&&data.content[0].text){
+      result=data.content[0].text;
+      renderResults();
+    } else {
+      alert('Error: '+(data.error?data.error.message:'Unknown error'));
+      go(flow==='whv'?'whv-form':'skilled-form');
+    }
+  })
+  .catch(err=>{
+    alert('Connection error. Please try again.');
+    go(flow==='whv'?'whv-form':'skilled-form');
+  });
+}
+ 
 function renderResults(){
   const t={...T['en'],...(T[lang]||{}),...(TL[lang]||{})};
   go('results-section');
