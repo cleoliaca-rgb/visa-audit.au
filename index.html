@@ -1198,6 +1198,62 @@ window.addEventListener('load',()=>{
   if(p.get('paid')==='true'){const sv=sessionStorage.getItem('va');if(sv){const{flow:f,fd:d,lang:l}=JSON.parse(sv);flow=f;fd=d;userEmail=d.email;if(l&&(T[l]||TL[l])){const labels={en:'EN',fr:'FR',de:'DE',es:'ES',it:'IT',ja:'JA',ko:'KO',pt:'PT',zh:'ZH'};document.getElementById('lang-current').textContent=labels[l]||l.toUpperCase();const opt=document.querySelector(`.lang-option[onclick*="'${l}'"]`);if(opt)opt.classList.add('active');applyLang(l);}sessionStorage.removeItem('va');runAnalysis();}}
 });
  
+function renderResults(){
+  var t=Object.assign({},T['en'],T[lang]||{},TL[lang]||{});
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  var rsec=document.getElementById('results-section');
+  if(rsec){rsec.style.display='block';rsec.classList.add('active');}
+  window.scrollTo(0,0);
+  var low=result.toLowerCase();
+  var inelig=['not eligible','ineligible','non éligible','nicht berechtigt','no es elegible','non idoneo','不符合资格','부적격','não elegível'];
+  var cond=['conditional','conditionnel','bedingt','condicional','condizionale','条件付き','조건부'];
+  var cls='ok',txt='Eligible';
+  if(inelig.some(function(w){return low.indexOf(w)>-1;})){cls='bad';txt='Not Eligible';}
+  else if(cond.some(function(w){return low.indexOf(w)>-1;})){cls='warn';txt='Conditional';}
+  var badge=document.getElementById('verdict-badge');
+  if(badge){badge.className='verdict '+cls;badge.innerHTML='<span class="v-dot"></span>'+txt;}
+  var titleEl=document.getElementById('res-title');
+  if(titleEl)titleEl.textContent=t.res_title||'Your Visa Audit Report';
+  var lbl=flow==='whv'?(t.whv_label||'WHV'):(t.skl_label||'Skilled');
+  var metaEl=document.getElementById('res-meta');
+  if(metaEl)metaEl.textContent=lbl+' · '+new Date().toLocaleDateString();
+  var sections=result.split(/^## /m).filter(function(s){return s.trim();});
+  function renderSec(s){
+    var h='## '+s;
+    h=h.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+    h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    h=h.replace(/^[-•] (.+)$/gm,'<li>$1</li>');
+    h=h.replace(/(<li>[^\n]+<\/li>\n?)+/g,function(m){return '<ul>'+m+'</ul>';});
+    var parts=h.split('\n\n');
+    parts=parts.map(function(p){return p.trim().charAt(0)==='<'?p:'<p>'+p.replace(/\n/g,' ')+'</p>';});
+    return parts.join('');
+  }
+  var freeHtml=sections.slice(0,1).map(renderSec).join('');
+  var lockedHtml=sections.slice(1).map(renderSec).join('');
+  var price=flow==='whv'?'59':'199';
+  var resBody=document.getElementById('res-body');
+  if(!resBody)return;
+  var html='';
+  html+='<div class="res-free">'+freeHtml+'</div>';
+  html+='<div class="res-locked" id="res-locked">';
+  html+='<div class="locked-blur" id="locked-blur">'+lockedHtml+'</div>';
+  html+='<div class="unlock-wall" id="unlock-wall">';
+  html+='<div class="unlock-card">';
+  html+='<div class="unlock-lock"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>';
+  html+='<div class="unlock-title">'+(t.unlock_title||'Unlock Your Full Report')+'</div>';
+  html+='<div class="unlock-features"><div class="uf-item">Complete step-by-step action plan</div><div class="uf-item">Documents checklist</div><div class="uf-item">Risks &amp; red flags</div><div class="uf-item">Timeline &amp; costs</div><div class="uf-item">PDF delivered by email</div></div>';
+  html+='<div class="unlock-price-row"><div class="unlock-price">AU$'+price+'</div><div class="unlock-compare">vs AU$300+ migration agent</div></div>';
+  html+='<button type="button" class="unlock-btn" onclick="unlockFull()">Unlock Full Report &#8594;</button>';
+  html+='<div class="unlock-guarantee">Secure payment &bull; One-time &bull; PDF emailed instantly</div>';
+  html+='</div></div></div>';
+  resBody.innerHTML=html;
+  var actEl=document.getElementById('res-actions');
+  if(actEl)actEl.innerHTML='<button type="button" class="btn-act p" onclick="openDashboard()" style="background:var(--blue);border-color:var(--blue);">My Dashboard &#8594;</button><button type="button" class="btn-act s" onclick="go(\'landing\')">&#8592; New Audit</button>';
+  var discEl=document.getElementById('res-disc');
+  if(discEl)discEl.textContent=t.disclaimer||'This report is for informational purposes only. Consult a MARA agent for visa applications.';
+}
+ 
 function unlockFull(){
   if(DEMO_MODE){
     document.getElementById('unlock-wall').style.display='none';
