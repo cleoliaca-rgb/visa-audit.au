@@ -1021,50 +1021,50 @@ function toggleFaq(btn){const item=btn.closest('.faq-item');item.classList.toggl
  
 /* ── FORMS ── */
 function submitWhv(){
-  const nat=document.getElementById('whv-nat').value;
-  const dob=document.getElementById('whv-dob').value;
-  const prev=(document.querySelector('input[name="prev"]:checked')||{}).value;
-  const crim=(document.querySelector('input[name="crim"]:checked')||{}).value;
-  const hlth=(document.querySelector('input[name="hlth"]:checked')||{}).value;
-  const seas=(document.querySelector('input[name="seas"]:checked')||{}).value;
-  const email=document.getElementById('whv-email').value;
-  const errEl=document.getElementById('whv-err');
-  const missing=[];
-  if(!nat)missing.push('nationality');
-  if(!dob)missing.push('date of birth');
-  if(!prev)missing.push('previous WHV');
-  if(!crim)missing.push('criminal record');
-  if(!hlth)missing.push('health');
-  if(!seas)missing.push('regional work');
-  if(!email)missing.push('email');
-  if(missing.length){if(errEl)errEl.textContent='Please fill in: '+missing.join(', ')+'.';return;}
-  if(errEl)errEl.textContent='';
-  const bd=new Date(dob),now=new Date();let age=now.getFullYear()-bd.getFullYear();
-  if(now.getMonth()<bd.getMonth()||(now.getMonth()===bd.getMonth()&&now.getDate()<bd.getDate()))age--;
-  flow='whv';userEmail=email;fd={nat,dob,age,prev,crim,hlth:hlth,seas,email};
+  var nat=document.getElementById('whv-nat').value;
+  var dob=document.getElementById('whv-dob').value;
+  var prev=''; var el=document.querySelector('input[name="prev"]:checked'); if(el) prev=el.value;
+  var crim=''; var el2=document.querySelector('input[name="crim"]:checked'); if(el2) crim=el2.value;
+  var hlth=''; var el3=document.querySelector('input[name="hlth"]:checked'); if(el3) hlth=el3.value;
+  var seas=''; var el4=document.querySelector('input[name="seas"]:checked'); if(el4) seas=el4.value;
+  var email=document.getElementById('whv-email').value;
+  var err=document.getElementById('whv-err');
+  var missing=[];
+  if(!nat) missing.push('nationality');
+  if(!dob) missing.push('date of birth');
+  if(!prev) missing.push('previous WHV answer');
+  if(!crim) missing.push('criminal record answer');
+  if(!hlth) missing.push('health answer');
+  if(!seas) missing.push('regional work answer');
+  if(!email) missing.push('email');
+  if(missing.length>0){ if(err) err.textContent='Missing: '+missing.join(', '); return; }
+  if(err) err.textContent='';
+  var bd=new Date(dob); var now=new Date(); var age=now.getFullYear()-bd.getFullYear();
+  if(now.getMonth()<bd.getMonth()||(now.getMonth()===bd.getMonth()&&now.getDate()<bd.getDate())) age--;
+  flow='whv'; userEmail=email; fd={nat:nat,dob:dob,age:age,prev:prev,crim:crim,hlth:hlth,seas:seas,email:email};
   runAnalysis();
 }
 function submitSkilled(){
-  const occ=document.getElementById('skl-occ').value;
-  const age=document.getElementById('skl-age').value;
-  const exp=document.getElementById('skl-exp').value;
-  const engT=document.getElementById('skl-eng-t').value;
-  const engS=document.getElementById('skl-eng-s').value;
-  const qualL=document.getElementById('skl-qual-l').value;
-  const qualC=document.getElementById('skl-qual-c').value;
-  const state=document.getElementById('skl-state').value;
-  const part=(document.querySelector('input[name="part"]:checked')||{}).value;
-  const email=document.getElementById('skl-email').value;
-  const errEl=document.getElementById('skl-err');
-  const missing=[];
-  if(!occ)missing.push('occupation');
-  if(!age)missing.push('age');
-  if(!exp)missing.push('experience');
-  if(!email)missing.push('email');
-  if(missing.length){if(errEl)errEl.textContent='Please fill in: '+missing.join(', ')+'.';return;}
-  if(errEl)errEl.textContent='';
-  flow='skilled';userEmail=email;
-  fd={occ,age:parseInt(age),exp:parseInt(exp),engT:engT||'Not specified',engS:engS||'N/A',qualL:qualL||'Not specified',qualC:qualC||'Not specified',state:state||'No preference',part:part||'Not specified',email};
+  var occ=document.getElementById('skl-occ').value;
+  var age=document.getElementById('skl-age').value;
+  var exp=document.getElementById('skl-exp').value;
+  var engT=document.getElementById('skl-eng-t').value;
+  var engS=document.getElementById('skl-eng-s').value;
+  var qualL=document.getElementById('skl-qual-l').value;
+  var qualC=document.getElementById('skl-qual-c').value;
+  var state=document.getElementById('skl-state').value;
+  var pt=''; var pe=document.querySelector('input[name="part"]:checked'); if(pe) pt=pe.value;
+  var email=document.getElementById('skl-email').value;
+  var err=document.getElementById('skl-err');
+  var missing=[];
+  if(!occ) missing.push('occupation');
+  if(!age) missing.push('age');
+  if(!exp) missing.push('experience');
+  if(!email) missing.push('email');
+  if(missing.length>0){ if(err) err.textContent='Missing: '+missing.join(', '); return; }
+  if(err) err.textContent='';
+  flow='skilled'; userEmail=email;
+  fd={occ:occ,age:parseInt(age)||0,exp:parseInt(exp)||0,engT:engT||'Not taken',engS:engS||'N/A',qualL:qualL||'Not specified',qualC:qualC||'Not specified',state:state||'No preference',part:pt||'Not specified',email:email};
   runAnalysis();
 }
 function buildPrompt(){
@@ -1074,49 +1074,45 @@ function buildPrompt(){
   }
   return 'You are a senior Australian immigration advisor. Produce a thorough, structured skilled migration audit in '+rl+' for this applicant. Be direct, warm, specific and highly actionable.\n\nPROFILE:\n- Occupation: '+fd.occ+'\n- Age: '+fd.age+'\n- Experience: '+fd.exp+' years\n- English: '+fd.engT+' — '+fd.engS+'\n- Qualification: '+fd.qualL+' ('+fd.qualC+')\n- Preferred state: '+fd.state+'\n- Partner: '+fd.part+'\n\nWrite ALL these sections (translate EVERY header to '+rl+'):\n\n## ELIGIBILITY VERDICT\nClear verdict: Eligible / Conditional / Not Eligible for skilled migration. Which visa(s) and why.\n\n## POINTS BREAKDOWN\nDetailed SkillSelect points table for each category: Age, English, Overseas experience, Australian experience, Qualification, Australian study, Partner skills, State nomination, Community language. Give a precise TOTAL RANGE (e.g. 75-80 pts) based on their actual answers.\n\n## YOUR VISA PATHWAYS\nRank 189, 190, 491 by likelihood: 189 independent (points needed, realistic?), 190 state nomination (which states nominate this occupation, current demand), 491 regional (areas to consider). For each: honest assessment, current cutoffs if known.\n\n## OCCUPATION ASSESSMENT\nWhich assessing authority handles '+fd.occ+' (Engineers Australia, VETASSESS, ACS, AHPRA, etc.). What the assessment involves, duration, cost. Whether their qualification from '+fd.qualC+' is likely recognised. Red flags or advantages.\n\n## CURRENT INVITATION LANDSCAPE\nRecent SkillSelect cutoff scores for their occupation category. Whether occupation is on MLTSSL or Short-term list. Invitation frequency. Honest fluctuation caveat.\n\n## HOW TO IMPROVE YOUR SCORE\nSpecific levers for this profile with points impact: English improvement, extra experience years, partner skills, Australian study (5 pts), state nomination targets. Quantify each.\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\nNumbered roadmap from today to PR:\n1. Occupation assessment (body, how to apply, timeline, cost)\n2. English test (which test, target score, booking)\n3. Lodge EOI in SkillSelect (how, what to include)\n4. State nomination application if 190/491 (portal, documents)\n5. Receive invitation (what triggers it, 60-day window)\n6. Lodge visa application (checklist, fees AUD 4,640+)\n7. Health checks (where, what involved)\n8. Police certificates (which countries, how to obtain)\n9. Grant and first entry requirements\nFor each step: exact action, URL/office, timeframe, cost.\n\n## REALISTIC TIMELINE\nFull honest timeline: occupation assessment (X months), English test, EOI wait (X-X months), visa processing (X-X months). Best case / realistic / worst case totals.\n\n## FINANCIAL ROADMAP\nAll costs: occupation assessment, English test, visa application (AUD 4,640+), health checks, police certificates. Total budget range.\n\n## IF NOT ELIGIBLE — ALTERNATIVE PATHWAYS\nIf points too low or occupation not listed: alternatives including 485 Graduate visa, WHV to build Australian experience, employer sponsorship (482), regional pathways.\n\n## IMPORTANT NOTICE\nInformational only, not legal migration advice. MARA agent strongly recommended for the application (mara.gov.au). Verify on immi.homeaffairs.gov.au and SkillSelect Trends.';
  
+}
  
 function runAnalysis(){
-  go('processing-section');
+  // Show processing
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  var proc=document.getElementById('processing-section');
+  if(proc){ proc.style.display='flex'; proc.classList.add('active'); }
+  window.scrollTo(0,0);
+ 
   if(DEMO_MODE){
-    setTimeout(()=>{
-      result = flow==='whv'
-        ? '## ELIGIBILITY VERDICT\nBased on your profile, you are **Eligible** for the Working Holiday Visa (subclass 417). Your nationality, age and profile meet the standard bilateral agreement conditions between your country and Australia.\n\n## PROFILE ANALYSIS\nYour profile presents no major obstacles. Your age falls within the 18-35 range required for most nationalities, and your answers show no critical red flags. You are a strong candidate.\n\n## NATIONALITY CONDITIONS\nYour country has an active bilateral agreement with Australia. The age limit is 18-35. You are eligible to apply for the subclass 417. No quota currently applies to your nationality.\n\n## YEAR 2 & YEAR 3 EXTENSION OPTIONS\nTo extend for a second year, you must complete 88 days of specified work in a regional area: agriculture, horticulture, construction, mining, bushfire recovery or fishing. Ask your employer to sign Form 1263. Regional postcodes are defined on the DIBP website.\n\n## HEALTH & CHARACTER REQUIREMENTS\nYou have indicated no significant health conditions or criminal record. Standard character requirements apply. A police certificate may be requested during processing.\n\n## FINANCIAL REQUIREMENTS\nYou will need to show approximately AUD 5,000 in accessible funds. Bank statements within 3 months of application. Health insurance is required for the duration of your stay. Visa application fee: approx AUD 650.\n\n## DOCUMENTS CHECKLIST\n**IDENTITY:** Valid passport, recent passport photos (35mm x 45mm)\n**FINANCES:** Bank statements (3 months), proof of AUD 5,000\n**HEALTH:** Travel/health insurance policy\n**CHARACTER:** Police certificate if requested\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\n1. Create an ImmiAccount at immi.homeaffairs.gov.au\n2. Gather documents (passport, bank statements, insurance)\n3. Lodge application online and pay AUD 650 fee\n4. Complete health check if requested by Immigration\n5. Receive grant (usually within 2-4 weeks for most nationalities)\n6. Book your flights and accommodation for first nights\n7. Enter Australia before your visa expires (within 12 months of grant)\n\n## TIMELINE\nMost nationalities receive a grant within 1-4 weeks. Apply at least 6-8 weeks before your planned departure to be safe.\n\n## IMPORTANT NOTICE\nThis is a demo result. In production, a personalised AI analysis will be generated based on your exact profile. Always verify current rules at immi.homeaffairs.gov.au.'
-        : '## ELIGIBILITY VERDICT\nBased on your profile, you appear **Conditionally Eligible** for skilled migration to Australia. Your points estimate puts you in a competitive range for the subclass 189 and 190 pathways, depending on your occupation and current SkillSelect cutoffs.\n\n## POINTS BREAKDOWN\n- Age: 25-32 = 30 pts / 33-39 = 25 pts\n- English (IELTS 7.5): 10 pts\n- Overseas experience (5+ years): 15 pts\n- Qualification (Bachelor+): 15 pts\n- State nomination (190): 5 pts\n**Estimated total: 70-80 points**\n\n## YOUR VISA PATHWAYS\n**189 Independent:** Requires 65+ pts minimum, but cutoffs often sit at 85-95+ for competitive occupations. Assess your occupation against current trends.\n**190 State Nomination:** Adds 5 pts, lower cutoffs in many states. Target states with active demand for your occupation.\n**491 Regional:** Adds 15 pts, lower cutoffs. Requires 3 years regional residence before PR.\n\n## OCCUPATION ASSESSMENT\nIdentify your assessing authority (Engineers Australia, ACS, AHPRA, VETASSESS, etc.) and apply for assessment before lodging your EOI. This typically takes 3-6 months.\n\n## STEP-BY-STEP ACTION PLAN\n1. Confirm your occupation is on the MLTSSL or State occupation list\n2. Apply for skills assessment (3-6 months, AUD 400-1,000)\n3. Book and sit English test if not done (IELTS/PTE)\n4. Lodge EOI in SkillSelect with maximum claimed points\n5. Apply for state nomination (190/491) if applicable\n6. Await invitation (fortnightly rounds)\n7. Lodge visa application within 60 days of invitation (AUD 4,640+)\n8. Complete health checks and obtain police certificates\n9. Receive grant and plan first entry\n\n## IMPORTANT NOTICE\nThis is a demo result. In production, a full personalised analysis is generated. Verify current rules at immi.homeaffairs.gov.au.';
+    var whvResult='## ELIGIBILITY VERDICT\nBased on your profile, you are **Eligible** for the Working Holiday Visa (subclass 417). Your nationality, age and answers meet the standard requirements.\n\n## PROFILE ANALYSIS\nYour profile has no major obstacles. Your age is within the required range and no critical red flags were detected.\n\n## NATIONALITY CONDITIONS\nYour country has an active bilateral agreement with Australia. You are eligible to apply for subclass 417. No quota currently applies.\n\n## YEAR 2 AND YEAR 3 OPTIONS\nTo extend for a second year, complete 88 days of specified regional work: agriculture, horticulture, construction, mining or bushfire recovery. Get Form 1263 signed by your employer.\n\n## HEALTH AND CHARACTER\nNo significant issues detected in your profile. Standard medical assessment applies. A police certificate may be requested.\n\n## FINANCIAL REQUIREMENTS\nShow approx AUD 5,000 in bank statements. Health insurance required. Visa fee approx AUD 650.\n\n## DOCUMENTS CHECKLIST\n- Valid passport\n- Recent passport photos\n- Bank statements (3 months)\n- Health insurance policy\n- Police certificate if requested\n\n## STEP-BY-STEP ACTION PLAN\n1. Create ImmiAccount at immi.homeaffairs.gov.au\n2. Gather documents (passport, bank statements, insurance)\n3. Lodge application online and pay AUD 650\n4. Complete health check if requested\n5. Receive grant (usually 2-4 weeks)\n6. Book flights and first accommodation\n7. Enter Australia within 12 months of grant';
+ 
+    var sklResult='## ELIGIBILITY VERDICT\nBased on your profile, you are **Conditionally Eligible** for skilled migration. Your estimated points put you in a competitive range depending on your occupation and current SkillSelect cutoffs.\n\n## POINTS BREAKDOWN\n- Age 25-32: 30 pts / 33-39: 25 pts\n- English (IELTS 7.5+): 10-20 pts\n- Overseas experience 5+ years: 15 pts\n- Bachelor qualification: 15 pts\n- State nomination: 5-10 pts\n**Estimated total: 70-85 points**\n\n## VISA PATHWAYS\n- **189 Independent**: Requires 65+ pts minimum, cutoffs often 85-95+ pts\n- **190 State Nomination**: +5 pts, lower cutoffs, check your state demand\n- **491 Regional**: +15 pts, easier to access, requires 3 years regional stay\n\n## OCCUPATION ASSESSMENT\nIdentify your assessing authority and apply before lodging your EOI. Takes 3-6 months, costs AUD 400-1,000.\n\n## STEP-BY-STEP ACTION PLAN\n1. Confirm occupation on MLTSSL or state list\n2. Apply for skills assessment (3-6 months)\n3. Sit English test if needed\n4. Lodge EOI in SkillSelect\n5. Apply for state nomination if 190/491\n6. Wait for invitation (fortnightly rounds)\n7. Lodge visa application within 60 days (AUD 4,640+)\n8. Health checks and police certificates\n9. Receive grant and plan first entry';
+ 
+    setTimeout(function(){
+      result = (flow==='whv') ? whvResult : sklResult;
       renderResults();
-    }, 2500);
+    }, 2000);
     return;
   }
-  const prompt = buildPrompt();
+ 
+  // Production: call Anthropic API
+  var prompt=buildPrompt();
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':API_KEY,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:3000,
-      messages:[{role:'user',content:prompt}]
-    })
-  })
-  .then(r=>r.json())
-  .then(data=>{
+    headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})
+  }).then(function(r){return r.json();}).then(function(data){
     if(data.content&&data.content[0]&&data.content[0].text){
       result=data.content[0].text;
       renderResults();
     } else {
-      alert('Error: '+(data.error?data.error.message:'Unknown error. Check your API key.'));
-      go(flow==='whv'?'whv-form':'skilled-form');
+      var msg=(data.error&&data.error.message)?data.error.message:'Unknown error';
+      document.getElementById('proc-title').textContent='Error: '+msg;
     }
-  })
-  .catch(err=>{
-    alert('Connection error. Please check your internet connection and try again.');
-    go(flow==='whv'?'whv-form':'skilled-form');
+  }).catch(function(err){
+    document.getElementById('proc-title').textContent='Connection error. Please try again.';
   });
 }
- 
 function renderResults(){
   const t={...T['en'],...(T[lang]||{}),...(TL[lang]||{})};
   go('results-section');
@@ -1369,7 +1365,20 @@ function openDashboard(){
   buildDashboard();
   go('dashboard-section');
 }
-}
+ 
+document.addEventListener('DOMContentLoaded', function(){
+  applyLang('en');
+  var saved = sessionStorage.getItem('va');
+  if(saved){
+    try {
+      var d = JSON.parse(saved);
+      flow = d.flow; fd = d.fd;
+      if(d.lang){ lang = d.lang; applyLang(d.lang); }
+      sessionStorage.removeItem('va');
+      runAnalysis();
+    } catch(e) { sessionStorage.removeItem('va'); }
+  }
+});
 </script>
 </body>
 </html>
