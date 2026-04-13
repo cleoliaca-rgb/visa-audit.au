@@ -391,6 +391,53 @@ footer{background:var(--ink);border-top:2px solid var(--ink);}
  
 .strip-inner{width:100%;max-width:1100px;margin-left:auto;margin-right:auto;height:100%;display:flex;align-items:center;padding-left:32px;padding-right:32px;box-sizing:border-box;}
  
+function unlockFull(){
+  if(DEMO_MODE){
+    document.getElementById('unlock-wall').style.display='none';
+    document.getElementById('locked-blur').style.filter='none';
+    document.getElementById('locked-blur').style.userSelect='auto';
+    const t={...T['en'],...(T[lang]||{}),...(TL[lang]||{})};
+    document.getElementById('res-actions').innerHTML=`<button class="btn-act p" onclick="dlPDF()">⬇ ${t.dl_pdf||'Download PDF'}</button><button class="btn-act s" onclick="go('landing')">← ${t.new_audit||'New Audit'}</button>`;
+    return;
+  }
+  // Production: redirect to Stripe
+  const link = flow==='whv'?STRIPE_WHV:STRIPE_SKILLED;
+  sessionStorage.setItem('va_unlock', JSON.stringify({flow,result,lang}));
+  window.location.href = link+'?client_reference_id=unlock_'+Date.now();
+}
+ 
+ 
+/* ── PDF ── */
+function dlPDF(){
+  if(!result||!window.jspdf)return;
+  const{jsPDF}=window.jspdf,t={...T['en'],...(T[lang]||{}),...(TL[lang]||{})},doc=new jsPDF({unit:'mm',format:'a4'}),lbl=flow==='whv'?t.whv_label:t.skl_label;
+  doc.setFillColor(26,95,255);doc.rect(0,0,210,28,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(255,255,255);doc.text('VISA AUDIT AUSTRALIA',18,12);
+  doc.setFontSize(9.5);doc.setFont('helvetica','normal');doc.text((lbl||'')+' · '+new Date().toLocaleDateString(),18,21);
+  doc.setTextColor(13,13,13);
+  const lines=doc.splitTextToSize(result.replace(/^## (.+)$/gm,'\n$1\n').replace(/\*\*/g,''),172);
+  let y=38;for(const ln of lines){if(y>282){doc.addPage();y=18;}const isH=result.includes('## '+ln.trim());if(isH){doc.setFont('helvetica','bold');doc.setFontSize(10.5);y+=3;}else{doc.setFont('helvetica','normal');doc.setFontSize(9.5);}doc.text(ln,18,y);y+=isH?6:5;}
+  doc.setFontSize(7.5);doc.setTextColor(150,140,130);doc.text('visaaudit.com.au — For informational purposes only. Not migration advice (MARA).',18,291);
+  doc.save('visa-audit-australia.pdf');
+}
+ 
+async function sendEmail(){try{await fetch('/api/send-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:userEmail,flow,content:result,lang})});}catch(e){}}
+ 
+/* ── INIT ── */
+window.addEventListener('load',()=>{
+  document.getElementById('whv-dob').max=new Date().toISOString().split('T')[0];
+  const p=new URLSearchParams(window.location.search),lp=p.get('lang');
+  if(lp&&(T[lp]||TL[lp])){
+    const labels={en:'EN',fr:'FR',de:'DE',es:'ES',it:'IT',ja:'JA',ko:'KO',pt:'PT',zh:'ZH'};
+    const flags={};
+    document.getElementById('lang-current').textContent=labels[lp]||lp.toUpperCase();
+    document.querySelectorAll('.lang-option').forEach(o=>o.classList.remove('active'));
+    const opt=document.querySelector(`.lang-option[onclick*="'${lp}'"]`);if(opt)opt.classList.add('active');
+    applyLang(lp);
+  }
+  if(p.get('paid')==='true'){const sv=sessionStorage.getItem('va');if(sv){const{flow:f,fd:d,lang:l}=JSON.parse(sv);flow=f;fd=d;userEmail=d.email;if(l&&(T[l]||TL[l])){const labels={en:'EN',fr:'FR',de:'DE',es:'ES',it:'IT',ja:'JA',ko:'KO',pt:'PT',zh:'ZH'};document.getElementById('lang-current').textContent=labels[l]||l.toUpperCase();const opt=document.querySelector(`.lang-option[onclick*="'${l}'"]`);if(opt)opt.classList.add('active');applyLang(l);}sessionStorage.removeItem('va');runAnalysis();}}
+ 
+ 
 /* ── DASHBOARD ── */
 #dashboard-section{padding:72px 20px 80px;background:var(--g);min-height:calc(100vh - 56px);}
 .dash-wrap{max-width:860px;margin:0 auto;}
@@ -953,8 +1000,6 @@ footer{background:var(--ink);border-top:2px solid var(--ink);}
 </footer>
 <script>
  
-const A
- 
 const API_KEY='YOUR_ANTHROPIC_API_KEY';
 const STRIPE_WHV='https://buy.stripe.com/YOUR_WHV_LINK';
 const STRIPE_SKILLED='https://buy.stripe.com/YOUR_SKILLED_LINK';
@@ -1046,85 +1091,63 @@ function toggleFaq(btn){const item=btn.closest('.faq-item');item.classList.toggl
 function submitWhv(){
   var nat=document.getElementById('whv-nat').value;
   var dob=document.getElementById('whv-dob').value;
-  var job=document.getElementById('whv-job').value||'Not specified';
-  var depart=document.getElementById('whv-depart').value||'Not specified';
-  var eng=''; var ee=document.querySelector('input[name="eng"]:checked'); if(ee) eng=ee.value;
-  var budget=''; var be=document.querySelector('input[name="budget"]:checked'); if(be) budget=be.value;
-  var prev=''; var pe=document.querySelector('input[name="prev"]:checked'); if(pe) prev=pe.value;
-  var been=''; var be2=document.querySelector('input[name="been"]:checked'); if(be2) been=be2.value;
-  var crim=''; var ce=document.querySelector('input[name="crim"]:checked'); if(ce) crim=ce.value;
-  var hlth=''; var he=document.querySelector('input[name="hlth"]:checked'); if(he) hlth=he.value;
-  var duration=''; var de=document.querySelector('input[name="duration"]:checked'); if(de) duration=de.value;
-  var seas=''; var se=document.querySelector('input[name="seas"]:checked'); if(se) seas=se.value;
+  var job=(document.getElementById('whv-job')||{}).value||'Not specified';
+  var depart=(document.getElementById('whv-depart')||{}).value||'Not specified';
+  var prev='';var pe=document.querySelector('input[name="prev"]:checked');if(pe)prev=pe.value;
+  var crim='';var ce=document.querySelector('input[name="crim"]:checked');if(ce)crim=ce.value;
+  var hlth='';var he=document.querySelector('input[name="hlth"]:checked');if(he)hlth=he.value;
+  var seas='';var se=document.querySelector('input[name="seas"]:checked');if(se)seas=se.value;
+  var eng='';var ee=document.querySelector('input[name="eng"]:checked');if(ee)eng=ee.value;
+  var budget='';var be=document.querySelector('input[name="budget"]:checked');if(be)budget=be.value;
+  var been='';var be2=document.querySelector('input[name="been"]:checked');if(be2)been=be2.value;
+  var duration='';var de=document.querySelector('input[name="duration"]:checked');if(de)duration=de.value;
   var email=document.getElementById('whv-email').value;
   var err=document.getElementById('whv-err');
-  var missing=[];
-  if(!nat) missing.push('nationality');
-  if(!dob) missing.push('date of birth');
-  if(!email) missing.push('email');
-  if(!prev) missing.push('previous WHV');
-  if(!crim) missing.push('criminal record');
-  if(!hlth) missing.push('health');
-  if(missing.length>0){ if(err) err.textContent='Please fill in: '+missing.join(', '); return; }
-  if(err) err.textContent='';
-  var bd=new Date(dob); var now=new Date(); var age=now.getFullYear()-bd.getFullYear();
-  if(now.getMonth()<bd.getMonth()||(now.getMonth()===bd.getMonth()&&now.getDate()<bd.getDate())) age--;
-  flow='whv'; userEmail=email;
-  fd={nat:nat,dob:dob,age:age,job:job,eng:eng,budget:budget,prev:prev,been:been||'Not specified',crim:crim,hlth:hlth,duration:duration||'Not specified',seas:seas||'Not decided',depart:depart,email:email};
+  if(!nat||!dob||!email){if(err)err.textContent='Please fill in: nationality, date of birth and email.';return;}
+  if(err)err.textContent='';
+  var bd=new Date(dob),now=new Date();var age=now.getFullYear()-bd.getFullYear();
+  if(now.getMonth()<bd.getMonth()||(now.getMonth()===bd.getMonth()&&now.getDate()<bd.getDate()))age--;
+  flow='whv';userEmail=email;
+  fd={nat:nat,dob:dob,age:age,job:job,eng:eng||'Not specified',budget:budget||'Not specified',been:been||'Not specified',prev:prev||'Not specified',crim:crim||'No criminal record',hlth:hlth||'No health conditions',seas:seas||'Not decided',duration:duration||'Not specified',depart:depart,email:email};
   runAnalysis();
 }
+ 
 function submitSkilled(){
-  var occ=document.getElementById('skl-occ').value;
-  var age=document.getElementById('skl-age').value;
-  var exp=document.getElementById('skl-exp').value;
-  var engT=document.getElementById('skl-eng-t').value;
-  var engS=document.getElementById('skl-eng-s').value;
-  var qualL=document.getElementById('skl-qual-l').value;
-  var qualC=document.getElementById('skl-qual-c').value;
-  var state=document.getElementById('skl-state').value;
-  var pt=''; var pe=document.querySelector('input[name="part"]:checked'); if(pe) pt=pe.value;
-  var email=document.getElementById('skl-email').value;
-  var err=document.getElementById('skl-err');
-  var missing=[];
-  if(!occ) missing.push('occupation');
-  if(!age) missing.push('age');
-  if(!exp) missing.push('experience');
-  if(!email) missing.push('email');
-  if(missing.length>0){ if(err) err.textContent='Missing: '+missing.join(', '); return; }
-  if(err) err.textContent='';
-  flow='skilled'; userEmail=email;
-  fd={occ:occ,age:parseInt(age)||0,exp:parseInt(exp)||0,engT:engT||'Not taken',engS:engS||'N/A',qualL:qualL||'Not specified',qualC:qualC||'Not specified',state:state||'No preference',part:pt||'Not specified',email:email};
-  runAnalysis();
+  const occ=document.getElementById('skl-occ').value,age=document.getElementById('skl-age').value,exp=document.getElementById('skl-exp').value,email=document.getElementById('skl-email').value;
+  if(!occ||!age||!exp||!email){alert('Please fill in occupation, age, experience and email.');return;}
+  flow='skilled';userEmail=email;
+  fd={occ,age,exp,engT:document.getElementById('skl-eng-t').value||'Not specified',engS:document.getElementById('skl-eng-s').value||'Not provided',qualL:document.getElementById('skl-qual-l').value||'Not specified',qualC:document.getElementById('skl-qual-c').value||'Not specified',state:document.getElementById('skl-state').value,part:document.querySelector('input[name="part"]:checked')?.value||'No partner',email};
+  sessionStorage.setItem('va',JSON.stringify({flow,fd,lang}));
+  DEMO_MODE?runAnalysis():(window.location.href=STRIPE_SKILLED+'?ref='+Date.now());
 }
+ 
+/* ── PROMPT ── */
 function buildPrompt(){
   const rl=LANG_NAMES[lang]||'English';
-  if(flow==='whv'){
-    return 'You are a senior Australian immigration advisor. Produce a thorough, structured visa eligibility audit in '+rl+' for this applicant. Be direct, warm, human — no jargon. Be highly specific and actionable based on their exact profile.\n\nPROFILE:\n- Nationality: '+fd.nat+'\n- Age: '+fd.age+' (DOB: '+fd.dob+')\n- Profession: '+fd.job+'\n- English level: '+fd.eng+'\n- Budget available: '+fd.budget+'\n- Previous visits to Australia: '+fd.been+'\n- Previous WHV: '+fd.prev+'\n- Planned stay: '+fd.duration+'\n- Planned departure: '+fd.depart+'\n- Regional work planned: '+fd.seas+'\n- Criminal record: '+fd.crim+'\n- Health conditions: '+fd.hlth+'\n\nWrite ALL these sections (translate EVERY header to '+rl+'):\n\n## ELIGIBILITY VERDICT\nClear verdict: Eligible / Conditional / Not Eligible. Explain WHY in 3 sentences specific to their nationality and profile.\n\n## PROFILE ANALYSIS\nStrengths and weaknesses of this profile. What works in their favour, what could be an issue. Be specific to their exact answers.\n\n## NATIONALITY CONDITIONS\nDetailed bilateral agreement for '+fd.nat+': quotas, age limit (18-30 or 18-35), whether 417 or 462 applies, nationality-specific rules. Current validity.\n\n## YEAR 2 & YEAR 3 EXTENSION OPTIONS\nExact requirements for 2nd year (88 days specified work) and 3rd year extensions. Specific qualifying work categories: agriculture, horticulture, construction, mining, bushfire recovery, etc. Concrete job examples. Approved regional zones. How to prove it (form 1263, employer declaration).\n\n## HEALTH & CHARACTER REQUIREMENTS\nBased on their criminal record: '+fd.crim+' and health: '+fd.hlth+'. What this means specifically. Medical checks required, conditions assessed, character requirements. If issues exist, explain pathways and what to prepare.\n\n## FINANCIAL REQUIREMENTS\nMinimum funds required (approx AUD 5,000). Proof of funds accepted. Health insurance requirements. Visa application fee (approx AUD 650). Total estimated cost.\n\n## DOCUMENTS CHECKLIST\nComplete grouped checklist: IDENTITY (passport, photos), FINANCES (bank statements), HEALTH (insurance, medical if needed), CHARACTER (police certificate if needed), NATIONALITY-SPECIFIC docs. Be exhaustive.\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\nNumbered roadmap from TODAY to landing in Australia:\n1. Create ImmiAccount on immi.homeaffairs.gov.au\n2. Gather all documents (list what, where to get each)\n3. Submit online application (what to fill, what to upload)\n4. Health examinations if required (where, how long, cost)\n5. Await grant (typical wait time)\n6. Prepare departure (what to organise before flying)\n7. First entry and activation\nFor each step: exact action, where to do it, realistic timeframe, cost. Make it a genuine roadmap.\n\n## TIMELINE & REALISTIC EXPECTATIONS\nTypical processing time for '+fd.nat+' applicants. Best, realistic and worst case. Seasonal peaks. When to apply relative to departure date.\n\n## IF NOT ELIGIBLE — ALTERNATIVE PATHWAYS\nIf blockers exist, what needs to change. Alternative visas: student visa + work rights, Graduate visa, Skilled visa. Do not leave them without options.\n\n## IMPORTANT NOTICE\nInformational only, not legal migration advice. For complex cases consult a MARA agent (mara.gov.au). Verify on immi.homeaffairs.gov.au.';
-  }
-  return 'You are a senior Australian immigration advisor. Produce a thorough, structured skilled migration audit in '+rl+' for this applicant. Be direct, warm, specific and highly actionable.\n\nPROFILE:\n- Occupation: '+fd.occ+'\n- Age: '+fd.age+'\n- Experience: '+fd.exp+' years\n- English: '+fd.engT+' — '+fd.engS+'\n- Qualification: '+fd.qualL+' ('+fd.qualC+')\n- Preferred state: '+fd.state+'\n- Partner: '+fd.part+'\n\nWrite ALL these sections (translate EVERY header to '+rl+'):\n\n## ELIGIBILITY VERDICT\nClear verdict: Eligible / Conditional / Not Eligible for skilled migration. Which visa(s) and why.\n\n## POINTS BREAKDOWN\nDetailed SkillSelect points table for each category: Age, English, Overseas experience, Australian experience, Qualification, Australian study, Partner skills, State nomination, Community language. Give a precise TOTAL RANGE (e.g. 75-80 pts) based on their actual answers.\n\n## YOUR VISA PATHWAYS\nRank 189, 190, 491 by likelihood: 189 independent (points needed, realistic?), 190 state nomination (which states nominate this occupation, current demand), 491 regional (areas to consider). For each: honest assessment, current cutoffs if known.\n\n## OCCUPATION ASSESSMENT\nWhich assessing authority handles '+fd.occ+' (Engineers Australia, VETASSESS, ACS, AHPRA, etc.). What the assessment involves, duration, cost. Whether their qualification from '+fd.qualC+' is likely recognised. Red flags or advantages.\n\n## CURRENT INVITATION LANDSCAPE\nRecent SkillSelect cutoff scores for their occupation category. Whether occupation is on MLTSSL or Short-term list. Invitation frequency. Honest fluctuation caveat.\n\n## HOW TO IMPROVE YOUR SCORE\nSpecific levers for this profile with points impact: English improvement, extra experience years, partner skills, Australian study (5 pts), state nomination targets. Quantify each.\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\nNumbered roadmap from today to PR:\n1. Occupation assessment (body, how to apply, timeline, cost)\n2. English test (which test, target score, booking)\n3. Lodge EOI in SkillSelect (how, what to include)\n4. State nomination application if 190/491 (portal, documents)\n5. Receive invitation (what triggers it, 60-day window)\n6. Lodge visa application (checklist, fees AUD 4,640+)\n7. Health checks (where, what involved)\n8. Police certificates (which countries, how to obtain)\n9. Grant and first entry requirements\nFor each step: exact action, URL/office, timeframe, cost.\n\n## REALISTIC TIMELINE\nFull honest timeline: occupation assessment (X months), English test, EOI wait (X-X months), visa processing (X-X months). Best case / realistic / worst case totals.\n\n## FINANCIAL ROADMAP\nAll costs: occupation assessment, English test, visa application (AUD 4,640+), health checks, police certificates. Total budget range.\n\n## IF NOT ELIGIBLE — ALTERNATIVE PATHWAYS\nIf points too low or occupation not listed: alternatives including 485 Graduate visa, WHV to build Australian experience, employer sponsorship (482), regional pathways.\n\n## IMPORTANT NOTICE\nInformational only, not legal migration advice. MARA agent strongly recommended for the application (mara.gov.au). Verify on immi.homeaffairs.gov.au and SkillSelect Trends.';
- 
+  if(flow==='whv')return `You are a senior Australian immigration advisor. Analyse this Working Holiday Visa applicant and produce a clear, detailed eligibility audit in ${rl}. Direct, warm, human tone — no jargon, no bureaucratic language. Be specific and actionable.\n\nPROFILE:\n- Nationality: ${fd.nat}\n- DOB: ${fd.dob} (age ${fd.age})\n- Previous WHV: ${fd.prev}\n- Criminal record: ${fd.crim}\n- Health conditions: ${fd.hlth}\n- Regional work planned: ${fd.seas}\n\nWrite these sections (translate headers to ${rl}):\n## ELIGIBILITY VERDICT\nClear statement: Eligible / Conditional / Not Eligible + plain-language explanation in 2-3 sentences.\n## NATIONALITY CONDITIONS\nBilateral agreement details, quotas, age limits, nationality-specific rules for this applicant.\n## YEAR 2 & YEAR 3 OPTIONS\nExact regional/specified work requirements for 2nd and 3rd year extensions. Concrete examples of qualifying work.\n## RISKS & RED FLAGS\nAnything in this profile that could complicate or block the application. Be specific.\n## DOCUMENTS CHECKLIST\nFull list of required documents, grouped logically.\n## YOUR NEXT STEPS\n4-5 prioritised, concrete actions. Most urgent first.\n## IMPORTANT NOTICE\nBrief reminder this is informational, not legal migration advice. Recommend official Department of Home Affairs and MARA for complex cases.`;
+  return `You are a senior Australian immigration advisor. Analyse this Skilled Migration applicant and produce a detailed points-based eligibility audit in ${rl}. Direct, warm, human tone — no jargon. Be specific and actionable.\n\nPROFILE:\n- Occupation: ${fd.occ}\n- Age: ${fd.age}\n- Experience: ${fd.exp} years\n- English: ${fd.engT} — ${fd.engS}\n- Qualification: ${fd.qualL} (${fd.qualC})\n- Preferred state: ${fd.state}\n- Partner: ${fd.part}\n\nWrite these sections (translate headers to ${rl}):\n## POINTS BREAKDOWN\nCalculate estimated SkillSelect points. Show each category (age, English, experience, qualification, partner skills, state nomination). Give realistic total range.\n## YOUR VISA PATHWAYS\nRank 189, 190, 491 by likelihood for this profile. Brief honest explanation for each.\n## CURRENT INVITATION LANDSCAPE\nTypical recent SkillSelect cutoffs for this occupation type. Be honest that cutoffs fluctuate.\n## HOW TO IMPROVE YOUR SCORE\nSpecific, actionable ways to gain more points — tailored to this profile.\n## REALISTIC TIMELINE\nFrom today to invitation to PR — honest range, not just best case.\n## YOUR NEXT STEPS\n4-5 prioritised concrete actions.\n## IMPORTANT NOTICE\nBrief reminder this is informational, not legal advice. Recommend MARA agent for the actual application.`;
 }
  
-function runAnalysis(){
-  // Show processing
+/* ── ANALYSIS ── */
+async function runAnalysis(){
   document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
   var proc=document.getElementById('processing-section');
-  if(proc){ proc.style.display='flex'; proc.classList.add('active'); }
+  if(proc){proc.style.display='flex';proc.classList.add('active');}
   window.scrollTo(0,0);
- 
   if(DEMO_MODE){
-    var whvResult='## ELIGIBILITY VERDICT\nBased on your profile, you are **Eligible** for the Working Holiday Visa (subclass 417). Your nationality, age and answers meet the standard requirements.\n\n## PROFILE ANALYSIS\nYour profile has no major obstacles. Your age is within the required range and no critical red flags were detected.\n\n## NATIONALITY CONDITIONS\nYour country has an active bilateral agreement with Australia. You are eligible to apply for subclass 417. No quota currently applies.\n\n## YEAR 2 AND YEAR 3 OPTIONS\nTo extend for a second year, complete 88 days of specified regional work: agriculture, horticulture, construction, mining or bushfire recovery. Get Form 1263 signed by your employer.\n\n## HEALTH AND CHARACTER\nNo significant issues detected in your profile. Standard medical assessment applies. A police certificate may be requested.\n\n## FINANCIAL REQUIREMENTS\nShow approx AUD 5,000 in bank statements. Health insurance required. Visa fee approx AUD 650.\n\n## DOCUMENTS CHECKLIST\n- Valid passport\n- Recent passport photos\n- Bank statements (3 months)\n- Health insurance policy\n- Police certificate if requested\n\n## STEP-BY-STEP ACTION PLAN\n1. Create ImmiAccount at immi.homeaffairs.gov.au\n2. Gather documents (passport, bank statements, insurance)\n3. Lodge application online and pay AUD 650\n4. Complete health check if requested\n5. Receive grant (usually 2-4 weeks)\n6. Book flights and first accommodation\n7. Enter Australia within 12 months of grant';
- 
-    var sklResult='## ELIGIBILITY VERDICT\nBased on your profile, you are **Conditionally Eligible** for skilled migration. Your estimated points put you in a competitive range depending on your occupation and current SkillSelect cutoffs.\n\n## POINTS BREAKDOWN\n- Age 25-32: 30 pts / 33-39: 25 pts\n- English (IELTS 7.5+): 10-20 pts\n- Overseas experience 5+ years: 15 pts\n- Bachelor qualification: 15 pts\n- State nomination: 5-10 pts\n**Estimated total: 70-85 points**\n\n## VISA PATHWAYS\n- **189 Independent**: Requires 65+ pts minimum, cutoffs often 85-95+ pts\n- **190 State Nomination**: +5 pts, lower cutoffs, check your state demand\n- **491 Regional**: +15 pts, easier to access, requires 3 years regional stay\n\n## OCCUPATION ASSESSMENT\nIdentify your assessing authority and apply before lodging your EOI. Takes 3-6 months, costs AUD 400-1,000.\n\n## STEP-BY-STEP ACTION PLAN\n1. Confirm occupation on MLTSSL or state list\n2. Apply for skills assessment (3-6 months)\n3. Sit English test if needed\n4. Lodge EOI in SkillSelect\n5. Apply for state nomination if 190/491\n6. Wait for invitation (fortnightly rounds)\n7. Lodge visa application within 60 days (AUD 4,640+)\n8. Health checks and police certificates\n9. Receive grant and plan first entry';
- 
+    var whvRes='## ELIGIBILITY VERDICT\nBased on your profile, you are **Eligible** for the Working Holiday Visa (subclass 417). Your nationality and age meet the standard requirements for this visa.\n\n## PROFILE ANALYSIS\nYour profile presents no major obstacles. Your age falls within the required range and no critical red flags were detected from your answers.\n\n## NATIONALITY CONDITIONS\nYour country has an active bilateral agreement with Australia. You are eligible to apply for subclass 417. No nationality-specific quota currently applies.\n\n## YEAR 2 AND YEAR 3 OPTIONS\nTo extend for a second year, complete 88 days of specified regional work: agriculture, horticulture, construction, mining or bushfire recovery. Ask your employer to sign Form 1263. Regional postcodes are listed on the DIBP website.\n\n## HEALTH AND CHARACTER\nNo significant issues detected in your profile. Standard medical assessment applies. A police certificate may be requested during processing.\n\n## FINANCIAL REQUIREMENTS\nYou will need to show approximately AUD 5,000 in accessible funds. Bank statements within 3 months of application. Health insurance is required. Visa application fee: approx AUD 650.\n\n## DOCUMENTS CHECKLIST\n- Valid passport (bio page copy)\n- Recent passport photos (35mm x 45mm)\n- Bank statements (3 months showing AUD 5,000+)\n- Health insurance policy\n- Police certificate if requested\n\n## STEP-BY-STEP ACTION PLAN\n1. Create ImmiAccount at immi.homeaffairs.gov.au\n2. Gather all documents listed above\n3. Lodge application online and pay AUD 650 fee\n4. Complete health check if requested (AUD 300-500)\n5. Receive grant — typically 2-4 weeks for most nationalities\n6. Book flights and first accommodation\n7. Enter Australia before visa expiry (12 months from grant)\n\n## TIMELINE\nMost nationalities: grant within 1-4 weeks. Apply at least 6-8 weeks before planned departure.\n\n## IMPORTANT NOTICE\nThis is a demo result for testing purposes. In production, a fully personalised AI analysis will be generated based on your exact profile. Always verify current rules at immi.homeaffairs.gov.au.';
+    var sklRes='## ELIGIBILITY VERDICT\nBased on your profile, you appear **Conditionally Eligible** for skilled migration to Australia. Your estimated points put you in a competitive range depending on your occupation and current SkillSelect cutoffs.\n\n## POINTS BREAKDOWN\n- Age (25-32): 30 pts\n- English (IELTS 7.0+): 10 pts\n- Overseas experience 5+ years: 15 pts\n- Bachelor qualification: 15 pts\n- State nomination (190): 5 pts\n**Estimated total: 70-80 points**\n\n## VISA PATHWAYS\n- **189 Independent**: Cutoffs often 85-95+ pts for competitive occupations\n- **190 State Nomination**: +5 pts, more accessible, check your state demand\n- **491 Regional**: +15 pts, lowest cutoffs, requires 3 years regional\n\n## STEP-BY-STEP ACTION PLAN\n1. Confirm occupation on MLTSSL or state occupation list\n2. Apply for skills assessment (3-6 months, AUD 400-1,000)\n3. Book English test if needed (IELTS/PTE, AUD 350-450)\n4. Lodge EOI in SkillSelect (free)\n5. Apply for state nomination if 190/491\n6. Await invitation — fortnightly rounds\n7. Lodge visa within 60 days of invitation (AUD 4,640+)\n8. Health checks and police certificates\n9. Receive grant\n\n## IMPORTANT NOTICE\nThis is a demo result. Production analysis will be fully personalised. Verify at immi.homeaffairs.gov.au.';
     setTimeout(function(){
-      result = (flow==='whv') ? whvResult : sklResult;
-      renderResults();
-    }, 2000);
+      try{
+        result=(flow==='whv')?whvRes:sklRes;
+        renderResults();
+      }catch(e){
+        var pt=document.getElementById('proc-title');
+        if(pt)pt.textContent='Error: '+e.message;
+      }
+    },2000);
     return;
   }
- 
-  // Production: call Anthropic API
   var prompt=buildPrompt();
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
@@ -1134,85 +1157,15 @@ function runAnalysis(){
     if(data.content&&data.content[0]&&data.content[0].text){
       result=data.content[0].text;
       renderResults();
-    } else {
-      var msg=(data.error&&data.error.message)?data.error.message:'Unknown error';
-      document.getElementById('proc-title').textContent='Error: '+msg;
+    }else{
+      var pt=document.getElementById('proc-title');
+      if(pt)pt.textContent='Error: '+(data.error?data.error.message:'Unknown error');
     }
-  }).catch(function(err){
-    document.getElementById('proc-title').textContent='Connection error. Please try again.';
+  }).catch(function(e){
+    var pt=document.getElementById('proc-title');
+    if(pt)pt.textContent='Connection error. Please try again.';
   });
 }
-function renderResults(){
-  const t={...T['en'],...(T[lang]||{}),...(TL[lang]||{})};
-  go('results-section');
-  const low=result.toLowerCase();
-  const inelig=['not eligible','ineligible','non éligible','nicht berechtigt','no es elegible','non idoneo','不符合资格','부적격','não elegível'];
-  const cond=['conditional','conditionnel','bedingt','condicional','condizionale','条件付き','조건부'];
-  let cls='ok',txt='Eligible';
-  if(inelig.some(w=>low.includes(w))){cls='bad';txt='Not Eligible';}
-  else if(cond.some(w=>low.includes(w))){cls='warn';txt='Conditional';}
-  document.getElementById('verdict-badge').className='verdict '+cls;
-  document.getElementById('verdict-badge').innerHTML='<span class="v-dot"></span>'+txt;
-  document.getElementById('res-title').textContent=t.res_title||'Your Visa Audit Report';
-  const lbl=flow==='whv'?t.whv_label:t.skl_label;
-  document.getElementById('res-meta').textContent=(lbl||'')+' · '+new Date().toLocaleDateString();
- 
-  // Split result into sections
-  const sections=result.split(/^## /m).filter(s=>s.trim());
-  function renderSection(s){
-    const txt='## '+s;
-    return txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/^## (.+)$/gm,'<h2>$1</h2>')
-      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-      .replace(/^[-•–] (.+)$/gm,'<li>$1</li>')
-      .replace(/(<li>[^]*?<\/li>\n?)+/g,m=>`<ul>${m}</ul>`)
-      .split('\n\n').map(p=>p.startsWith('<')?p:`<p>${p.replace(/\n/g,' ')}</p>`).join('\n');
-  }
- 
-  // FREE: show first section (verdict) + partial second
-  const freeHtml = sections.slice(0,1).map(renderSection).join('');
-  // LOCKED: rest
-  const lockedHtml = sections.slice(1).map(renderSection).join('');
- 
-  const resBody = document.getElementById('res-body');
-  resBody.innerHTML = `
-    <div class="res-free">${freeHtml}</div>
-    <div class="res-locked" id="res-locked">
-      <div class="locked-blur" id="locked-blur">${lockedHtml}</div>
-      <div class="unlock-wall" id="unlock-wall">
-        <div class="unlock-card">
-          <div class="unlock-icon" style="font-size:28px;margin-bottom:12px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
-          <div class="unlock-title">${t.unlock_title||'Unlock Your Full Report'}</div>
-          <div class="unlock-sub">${t.unlock_sub||'Risks & red flags · Documents checklist · Your next steps · Personalised recommendations'}</div>
-          <div class="unlock-price-row">
-            <div class="unlock-price">AU$${flow==='whv'?'59':'199'}</div>
-            <div class="unlock-compare">${t.unlock_compare||'vs AU$300+ migration agent'}</div>
-          </div>
-          <button class="unlock-btn" onclick="unlockFull()">${t.unlock_btn||'Unlock Full Report'} →</button>
-          <div class="unlock-guarantee">${t.unlock_guarantee||'Secure payment · One-time · PDF emailed instantly'}</div>
-        </div>
-      </div>
-    </div>`;
- 
-  document.getElementById('res-actions').innerHTML=`<button class="btn-act p" onclick="openDashboard()" style="background:var(--blue);border-color:var(--blue);">My Application Dashboard &#8594;</button><button class="btn-act s" onclick="go('landing')">← ${t.new_audit||'New Audit'}</button>`;
-  document.getElementById('res-disc').textContent=t.disclaimer||'';
-}
- 
-function unlockFull(){
-  if(DEMO_MODE){
-    document.getElementById('unlock-wall').style.display='none';
-    document.getElementById('locked-blur').style.filter='none';
-    document.getElementById('locked-blur').style.userSelect='auto';
-    const t={...T['en'],...(T[lang]||{}),...(TL[lang]||{})};
-    document.getElementById('res-actions').innerHTML=`<button class="btn-act p" onclick="dlPDF()">&#8659; ${t.dl_pdf||'Download PDF'}</button><button class="btn-act p" onclick="openDashboard()" style="background:var(--blue);border-color:var(--blue);">My Dashboard &#8594;</button><button class="btn-act s" onclick="go('landing')">← ${t.new_audit||'New Audit'}</button>`;
-    return;
-  }
-  // Production: redirect to Stripe
-  const link = flow==='whv'?STRIPE_WHV:STRIPE_SKILLED;
-  sessionStorage.setItem('va_unlock', JSON.stringify({flow,result,lang}));
-  window.location.href = link+'?client_reference_id=unlock_'+Date.now();
-}
- 
  
 /* ── PDF ── */
 function dlPDF(){
@@ -1245,149 +1198,93 @@ window.addEventListener('load',()=>{
   if(p.get('paid')==='true'){const sv=sessionStorage.getItem('va');if(sv){const{flow:f,fd:d,lang:l}=JSON.parse(sv);flow=f;fd=d;userEmail=d.email;if(l&&(T[l]||TL[l])){const labels={en:'EN',fr:'FR',de:'DE',es:'ES',it:'IT',ja:'JA',ko:'KO',pt:'PT',zh:'ZH'};document.getElementById('lang-current').textContent=labels[l]||l.toUpperCase();const opt=document.querySelector(`.lang-option[onclick*="'${l}'"]`);if(opt)opt.classList.add('active');applyLang(l);}sessionStorage.removeItem('va');runAnalysis();}}
 });
  
+function unlockFull(){
+  if(DEMO_MODE){
+    document.getElementById('unlock-wall').style.display='none';
+    document.getElementById('locked-blur').style.filter='none';
+    document.getElementById('locked-blur').style.userSelect='auto';
+    const t={...T['en'],...(T[lang]||{}),...(TL[lang]||{})};
+    document.getElementById('res-actions').innerHTML=`<button class="btn-act p" onclick="dlPDF()">⬇ ${t.dl_pdf||'Download PDF'}</button><button class="btn-act s" onclick="go('landing')">← ${t.new_audit||'New Audit'}</button>`;
+    return;
+  }
+  // Production: redirect to Stripe
+  const link = flow==='whv'?STRIPE_WHV:STRIPE_SKILLED;
+  sessionStorage.setItem('va_unlock', JSON.stringify({flow,result,lang}));
+  window.location.href = link+'?client_reference_id=unlock_'+Date.now();
+}
  
  
- 
-/* ── DASHBOARD ── */
-const WHV_STEPS = [
-  {phase:'Before you apply', steps:[
-    {title:'Create your ImmiAccount', desc:'Go to immi.homeaffairs.gov.au and create a free account. This is where you will submit your application.', time:'15 min', cost:'Free', url:'https://immi.homeaffairs.gov.au'},
-    {title:'Check your passport validity', desc:'Your passport must be valid for your entire stay. If it expires within 12-18 months, renew it first.', time:'1 day', cost:'Varies'},
-    {title:'Gather your identity documents', desc:'Passport bio page, ID photos (35mm x 45mm, white background), any previous Australian visas.', time:'1-2 days', cost:'Free'},
-    {title:'Get proof of funds', desc:'Bank statements showing approx AUD 5,000. Statements must be dated within 3 months of application.', time:'3 days', cost:'Free'},
-    {title:'Arrange health insurance', desc:'Most nationalities require Overseas Visitor Health Cover (OSHC) or equivalent. Check if your bilateral agreement covers you.', time:'1 day', cost:'AUD 50-100/month'},
-    {title:'Obtain police certificate (if required)', desc:'If you have a criminal record or depending on nationality, a police certificate from your home country may be needed.', time:'2-4 weeks', cost:'Varies'},
-  ]},
-  {phase:'Submitting your application', steps:[
-    {title:'Lodge application online via ImmiAccount', desc:'Complete the WHV application form (subclass 417 or 462). Upload all documents. Pay the visa application charge (approx AUD 650).', time:'2-3 hours', cost:'AUD 650', url:'https://immi.homeaffairs.gov.au'},
-    {title:'Complete health examinations if required', desc:'Log in to ImmiAccount to check if health checks are requested. Book through an approved BUPA Medical centre or equivalent.', time:'1-3 days', cost:'AUD 300-500'},
-    {title:'Respond to any requests from Immigration', desc:'Check your ImmiAccount and email regularly. Reply to any additional document requests promptly.', time:'Ongoing', cost:'Free'},
-  ]},
-  {phase:'After grant', steps:[
-    {title:'Receive your visa grant notice', desc:'Check ImmiAccount for your visa grant. Note the validity dates, entry conditions and any conditions on your visa.', time:'Days to months', cost:'Free'},
-    {title:'Activate your visa with your first entry', desc:'Your WHV must be activated within 12 months of grant by entering Australia. The 12-month stay clock starts from first entry.', time:'First arrival', cost:'Free'},
-    {title:'Arrange accommodation for arrival', desc:'Book at least your first 1-2 weeks. Hostels in Sydney, Melbourne or Brisbane are popular starting points for backpackers.', time:'1-2 days', cost:'AUD 25-60/night'},
-  ]},
-  {phase:'In Australia — extending your stay', steps:[
-    {title:'Complete 88 days of specified work (Year 2)', desc:'Work in agriculture, horticulture, construction, mining, fishing or bushfire recovery in a regional area. Keep payslips and get Form 1263 signed by employer.', time:'88 work days', cost:'Free'},
-    {title:'Apply for Year 2 extension', desc:'Apply through ImmiAccount before your current visa expires. Submit Form 1263 and evidence of regional work.', time:'30 min', cost:'AUD 650', url:'https://immi.homeaffairs.gov.au'},
-    {title:'Complete 179 days of specified work (Year 3)', desc:'Additional regional work required for a third year stay. Same conditions as Year 2 but longer period required.', time:'179 work days', cost:'Free'},
-  ]}
-];
- 
-const SKL_STEPS = [
-  {phase:'Assess your eligibility', steps:[
-    {title:'Identify your assessing authority', desc:'Find which body assesses your occupation: Engineers Australia, VETASSESS, ACS (IT), AHPRA (health), etc. Check at immi.homeaffairs.gov.au/skills.', time:'1 day', cost:'Free', url:'https://immi.homeaffairs.gov.au'},
-    {title:'Submit your skills assessment application', desc:'Apply directly to your assessing authority. Provide qualifications, employment references, transcripts. This is often the longest step.', time:'3-6 months', cost:'AUD 400-1,000'},
-    {title:'Take an English language test', desc:'Book IELTS Academic, PTE Academic or TOEFL iBT. For maximum points (20pts) aim for IELTS 8.0+ overall. Score determines your points.', time:'2-4 weeks', cost:'AUD 350-450'},
-  ]},
-  {phase:'Expression of Interest', steps:[
-    {title:'Create your SkillSelect EOI', desc:'Go to skillselect.immi.homeaffairs.gov.au. Fill in your profile, points claim, occupation, skills assessment reference. Maximise every category.', time:'2-3 hours', cost:'Free', url:'https://skillselect.immi.homeaffairs.gov.au'},
-    {title:'Apply for state nomination (190/491)', desc:'Research state government occupation lists. Apply via your target state migration portal. Requirements and processing times vary widely.', time:'1-6 months', cost:'Free'},
-    {title:'Wait for invitation from SkillSelect', desc:'Invitations are issued fortnightly. Monitor your SkillSelect account. Your ranking depends on points score and when you submitted your EOI.', time:'Weeks to years', cost:'Free'},
-  ]},
-  {phase:'Visa application', steps:[
-    {title:'Lodge your visa application within 60 days', desc:'You must lodge within 60 days of receiving your invitation. Apply via ImmiAccount. Gather all documents: skills assessment, English results, employment evidence.', time:'1 week preparation', cost:'AUD 4,640+', url:'https://immi.homeaffairs.gov.au'},
-    {title:'Include family members in application', desc:'If bringing a partner or children, include them in your application. They will need their own police and health checks.', time:'1-2 weeks extra', cost:'AUD 2,320 per adult'},
-    {title:'Complete health examinations', desc:'Book via HAP link provided in ImmiAccount. Chest X-ray and medical required. BUPA Medical or approved centre.', time:'1-3 days', cost:'AUD 300-700'},
-    {title:'Obtain police certificates', desc:'Required from every country you lived in for 12+ months in the past 10 years. Some countries (UK, France, etc.) take 2-4 weeks.', time:'2-4 weeks', cost:'AUD 40-100 per country'},
-    {title:'Respond to any requests', desc:'Immigration may request additional evidence. Respond within the timeframe given. Consider engaging a MARA agent for complex requests.', time:'Ongoing', cost:'Free'},
-  ]},
-  {phase:'After grant', steps:[
-    {title:'Receive your visa grant', desc:'Check ImmiAccount. Note conditions: must enter Australia within 12 months of grant. First entry activates the 5-year stay period.', time:'Weeks to months', cost:'Free'},
-    {title:'First entry to Australia', desc:'Visa is activated on first arrival. Keep your grant notice. No special entry procedure needed — just present your passport.', time:'Day of arrival', cost:'Free'},
-    {title:'Apply for permanent residence (if on 491)', desc:'After 3 years on subclass 491 in a regional area, you can apply for subclass 191 permanent visa.', time:'3 years', cost:'AUD 2,000+'},
-  ]}
-];
- 
-let dashSteps = [];
-let dashChecked = {};
+/* ── PDF ── */
  
 function buildDashboard(){
-  const steps = flow === 'whv' ? WHV_STEPS : SKL_STEPS;
-  const tag = document.getElementById('dash-visa-tag');
-  if(tag){tag.textContent = flow === 'whv' ? 'Working Holiday Visa' : 'Skilled Migration'; tag.className = 'dash-visa-tag ' + flow;}
-  
-  // Load saved state
-  const saved = localStorage.getItem('va_dash_' + flow);
-  dashChecked = saved ? JSON.parse(saved) : {};
-  const savedNotes = localStorage.getItem('va_dash_notes_' + flow);
-  if(savedNotes && document.getElementById('dash-notes')) document.getElementById('dash-notes').value = savedNotes;
- 
-  // Build steps list
-  dashSteps = [];
-  let stepIndex = 0;
-  const container = document.getElementById('dash-steps-container');
-  if(!container) return;
-  container.innerHTML = '';
- 
-  steps.forEach(phase => {
-    const phaseEl = document.createElement('div');
-    phaseEl.className = 'dash-phase';
-    phaseEl.innerHTML = '<div class="dash-phase-title">'+phase.phase+'</div>';
-    const stepsEl = document.createElement('div');
-    stepsEl.className = 'dash-steps';
-    
-    phase.steps.forEach(step => {
-      const idx = stepIndex++;
-      dashSteps.push({idx, title: step.title});
-      const isDone = dashChecked[idx] === 'done';
-      const isInProgress = dashChecked[idx] === 'progress';
-      
-      const div = document.createElement('div');
-      div.className = 'dash-step' + (isDone ? ' done' : isInProgress ? ' in-progress' : '');
-      div.dataset.idx = idx;
-      
-      let meta = '';
-      if(step.time) meta += '<span>&#9200; '+step.time+'</span>';
-      if(step.cost) meta += '<span>&#128176; '+step.cost+'</span>';
-      if(step.url) meta += '<span><a href="'+step.url+'" target="_blank" style="color:var(--blue);font-weight:700;">Open link &#8594;</a></span>';
- 
-      div.innerHTML = `
-        <div class="dash-step-num">\${idx+1}</div>
-        <div class="dash-step-content">
-          <div class="dash-step-title">\${step.title}</div>
-          <div class="dash-step-desc">\${step.desc}</div>
-          \${meta ? '<div class="dash-step-meta">'+meta+'</div>' : ''}
-          <div style="display:flex;gap:8px;margin-top:10px;">
-            <button onclick="setStepStatus(\${idx},'progress')" style="padding:4px 10px;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.3px;background:\${isInProgress ? '#FFD146':'transparent'};border:1.5px solid \${isInProgress ? '#B8920A':'var(--b)'};border-radius:2px;cursor:pointer;color:\${isInProgress ? 'var(--ink)':'var(--mu)'};">In progress</button>
-            <button onclick="setStepStatus(\${idx},'done')" style="padding:4px 10px;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.3px;background:\${isDone ? '#0A7A42':'transparent'};border:1.5px solid \${isDone ? '#0A7A42':'var(--b)'};border-radius:2px;cursor:pointer;color:\${isDone ? 'white':'var(--mu)'};">Done</button>
-            \${(isDone||isInProgress) ? '<button onclick="setStepStatus('+idx+','')" style="padding:4px 10px;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.3px;background:transparent;border:1.5px solid var(--b);border-radius:2px;cursor:pointer;color:var(--mu);">Reset</button>' : ''}
-          </div>
-        </div>
-      `;
+  var steps=flow==='whv'?WHV_STEPS:SKL_STEPS;
+  var tag=document.getElementById('dash-visa-tag');
+  if(tag){tag.textContent=flow==='whv'?'Working Holiday Visa':'Skilled Migration';tag.className='dash-visa-tag '+flow;}
+  var saved=localStorage.getItem('va_dash_'+flow);
+  dashChecked=saved?JSON.parse(saved):{};
+  var savedNotes=localStorage.getItem('va_dash_notes_'+flow);
+  var notesEl=document.getElementById('dash-notes');
+  if(savedNotes&&notesEl)notesEl.value=savedNotes;
+  dashSteps=[];
+  var container=document.getElementById('dash-steps-container');
+  if(!container)return;
+  container.innerHTML='';
+  var stepIndex=0;
+  steps.forEach(function(phase){
+    var phaseEl=document.createElement('div');
+    phaseEl.className='dash-phase';
+    phaseEl.innerHTML='<div class="dash-phase-title">'+phase.phase+'</div>';
+    var stepsEl=document.createElement('div');
+    stepsEl.className='dash-steps';
+    phase.steps.forEach(function(step){
+      var idx=stepIndex++;
+      dashSteps.push({idx:idx,title:step.title});
+      var isDone=dashChecked[idx]==='done';
+      var isIP=dashChecked[idx]==='progress';
+      var div=document.createElement('div');
+      div.className='dash-step'+(isDone?' done':isIP?' in-progress':'');
+      div.dataset.idx=idx;
+      var meta='';
+      if(step.time)meta+='<span>'+step.time+'</span>';
+      if(step.cost)meta+='<span>'+step.cost+'</span>';
+      if(step.url)meta+='<span><a href="'+step.url+'" target="_blank" style="color:var(--blue);font-weight:700;">Open &#8594;</a></span>';
+      var btns='<div style="display:flex;gap:8px;margin-top:10px;">';
+      btns+='<button type="button" onclick="setStepStatus('+idx+',\'progress\')" style="padding:4px 10px;font-family:var(--ui);font-size:10px;font-weight:700;background:'+(isIP?'#FFD146':'transparent')+';border:1.5px solid '+(isIP?'#B8920A':'var(--b)')+';border-radius:2px;cursor:pointer;color:'+(isIP?'var(--ink)':'var(--mu)')+';">In progress</button>';
+      btns+='<button type="button" onclick="setStepStatus('+idx+',\'done\')" style="padding:4px 10px;font-family:var(--ui);font-size:10px;font-weight:700;background:'+(isDone?'#0A7A42':'transparent')+';border:1.5px solid '+(isDone?'#0A7A42':'var(--b)')+';border-radius:2px;cursor:pointer;color:'+(isDone?'white':'var(--mu)')+';">Done</button>';
+      if(isDone||isIP)btns+='<button type="button" onclick="setStepStatus('+idx+',\'\')" style="padding:4px 10px;font-family:var(--ui);font-size:10px;font-weight:700;background:transparent;border:1.5px solid var(--b);border-radius:2px;cursor:pointer;color:var(--mu);">Reset</button>';
+      btns+='</div>';
+      div.innerHTML='<div class="dash-step-num">'+(idx+1)+'</div><div class="dash-step-content"><div class="dash-step-title">'+step.title+'</div><div class="dash-step-desc">'+step.desc+'</div>'+(meta?'<div class="dash-step-meta">'+meta+'</div>':'')+btns+'</div>';
       stepsEl.appendChild(div);
     });
     phaseEl.appendChild(stepsEl);
     container.appendChild(phaseEl);
   });
- 
   updateDashProgress();
 }
  
-function setStepStatus(idx, status){
-  dashChecked[idx] = status;
-  localStorage.setItem('va_dash_' + flow, JSON.stringify(dashChecked));
-  buildDashboard(); // re-render
+function setStepStatus(idx,status){
+  dashChecked[idx]=status;
+  localStorage.setItem('va_dash_'+flow,JSON.stringify(dashChecked));
+  buildDashboard();
 }
  
 function updateDashProgress(){
-  const total = dashSteps.length;
-  const done = Object.values(dashChecked).filter(v => v === 'done').length;
-  const pct = total ? Math.round(done / total * 100) : 0;
-  const pctEl = document.getElementById('dash-progress-pct');
-  const countEl = document.getElementById('dash-progress-count');
-  const fillEl = document.getElementById('dash-progress-fill');
-  if(pctEl) pctEl.textContent = pct + '%';
-  if(countEl) countEl.textContent = done + ' / ' + total + ' steps done';
-  if(fillEl) fillEl.style.width = pct + '%';
+  var total=dashSteps.length;
+  var done=Object.values(dashChecked).filter(function(v){return v==='done';}).length;
+  var pct=total?Math.round(done/total*100):0;
+  var pctEl=document.getElementById('dash-progress-pct');
+  var countEl=document.getElementById('dash-progress-count');
+  var fillEl=document.getElementById('dash-progress-fill');
+  if(pctEl)pctEl.textContent=pct+'%';
+  if(countEl)countEl.textContent=done+' / '+total+' steps done';
+  if(fillEl)fillEl.style.width=pct+'%';
 }
  
 function saveDashNotes(){
-  const notes = document.getElementById('dash-notes');
-  if(notes) localStorage.setItem('va_dash_notes_' + flow, notes.value);
-  const saved = document.getElementById('dash-notes-saved');
-  if(saved){saved.style.display='block';setTimeout(()=>saved.style.display='none',2000);}
+  var notes=document.getElementById('dash-notes');
+  if(notes)localStorage.setItem('va_dash_notes_'+flow,notes.value);
+  var saved=document.getElementById('dash-notes-saved');
+  if(saved){saved.style.display='block';setTimeout(function(){saved.style.display='none';},2000);}
 }
  
 function openDashboard(){
@@ -1395,28 +1292,25 @@ function openDashboard(){
   go('dashboard-section');
 }
  
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded',function(){
   applyLang('en');
- 
-  // Attach button listeners (backup to inline onclick)
-  var bwg = document.getElementById('btn-whv-go');
-  if(bwg) bwg.addEventListener('click', submitWhv);
-  var bsg = document.getElementById('btn-skl-go');
-  if(bsg) bsg.addEventListener('click', submitSkilled);
-  var bnc = document.getElementById('btn-nav-cta');
-  if(bnc) bnc.addEventListener('click', function(){ go('whv-form'); });
- 
-  var saved = sessionStorage.getItem('va');
+  var bwg=document.getElementById('btn-whv-go');
+  if(bwg)bwg.addEventListener('click',submitWhv);
+  var bsg=document.getElementById('btn-skl-go');
+  if(bsg)bsg.addEventListener('click',submitSkilled);
+  var saved=sessionStorage.getItem('va');
   if(saved){
-    try {
-      var d = JSON.parse(saved);
-      flow = d.flow; fd = d.fd;
-      if(d.lang){ lang = d.lang; applyLang(d.lang); }
+    try{
+      var d=JSON.parse(saved);
+      flow=d.flow;fd=d.fd;
+      if(d.lang){lang=d.lang;applyLang(d.lang);}
       sessionStorage.removeItem('va');
       runAnalysis();
-    } catch(e) { sessionStorage.removeItem('va'); }
+    }catch(e){sessionStorage.removeItem('va');}
   }
 });
+ 
+</script>
  
 </body>
 </html>
