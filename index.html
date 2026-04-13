@@ -1050,6 +1050,15 @@ function buildPrompt(){
  
 function runAnalysis(){
   go('processing-section');
+  if(DEMO_MODE){
+    setTimeout(()=>{
+      result = flow==='whv'
+        ? '## ELIGIBILITY VERDICT\nBased on your profile, you are **Eligible** for the Working Holiday Visa (subclass 417). Your nationality, age and profile meet the standard bilateral agreement conditions between your country and Australia.\n\n## PROFILE ANALYSIS\nYour profile presents no major obstacles. Your age falls within the 18-35 range required for most nationalities, and your answers show no critical red flags. You are a strong candidate.\n\n## NATIONALITY CONDITIONS\nYour country has an active bilateral agreement with Australia. The age limit is 18-35. You are eligible to apply for the subclass 417. No quota currently applies to your nationality.\n\n## YEAR 2 & YEAR 3 EXTENSION OPTIONS\nTo extend for a second year, you must complete 88 days of specified work in a regional area: agriculture, horticulture, construction, mining, bushfire recovery or fishing. Ask your employer to sign Form 1263. Regional postcodes are defined on the DIBP website.\n\n## HEALTH & CHARACTER REQUIREMENTS\nYou have indicated no significant health conditions or criminal record. Standard character requirements apply. A police certificate may be requested during processing.\n\n## FINANCIAL REQUIREMENTS\nYou will need to show approximately AUD 5,000 in accessible funds. Bank statements within 3 months of application. Health insurance is required for the duration of your stay. Visa application fee: approx AUD 650.\n\n## DOCUMENTS CHECKLIST\n**IDENTITY:** Valid passport, recent passport photos (35mm x 45mm)\n**FINANCES:** Bank statements (3 months), proof of AUD 5,000\n**HEALTH:** Travel/health insurance policy\n**CHARACTER:** Police certificate if requested\n\n## COMPLETE STEP-BY-STEP ACTION PLAN\n1. Create an ImmiAccount at immi.homeaffairs.gov.au\n2. Gather documents (passport, bank statements, insurance)\n3. Lodge application online and pay AUD 650 fee\n4. Complete health check if requested by Immigration\n5. Receive grant (usually within 2-4 weeks for most nationalities)\n6. Book your flights and accommodation for first nights\n7. Enter Australia before your visa expires (within 12 months of grant)\n\n## TIMELINE\nMost nationalities receive a grant within 1-4 weeks. Apply at least 6-8 weeks before your planned departure to be safe.\n\n## IMPORTANT NOTICE\nThis is a demo result. In production, a personalised AI analysis will be generated based on your exact profile. Always verify current rules at immi.homeaffairs.gov.au.'
+        : '## ELIGIBILITY VERDICT\nBased on your profile, you appear **Conditionally Eligible** for skilled migration to Australia. Your points estimate puts you in a competitive range for the subclass 189 and 190 pathways, depending on your occupation and current SkillSelect cutoffs.\n\n## POINTS BREAKDOWN\n- Age: 25-32 = 30 pts / 33-39 = 25 pts\n- English (IELTS 7.5): 10 pts\n- Overseas experience (5+ years): 15 pts\n- Qualification (Bachelor+): 15 pts\n- State nomination (190): 5 pts\n**Estimated total: 70-80 points**\n\n## YOUR VISA PATHWAYS\n**189 Independent:** Requires 65+ pts minimum, but cutoffs often sit at 85-95+ for competitive occupations. Assess your occupation against current trends.\n**190 State Nomination:** Adds 5 pts, lower cutoffs in many states. Target states with active demand for your occupation.\n**491 Regional:** Adds 15 pts, lower cutoffs. Requires 3 years regional residence before PR.\n\n## OCCUPATION ASSESSMENT\nIdentify your assessing authority (Engineers Australia, ACS, AHPRA, VETASSESS, etc.) and apply for assessment before lodging your EOI. This typically takes 3-6 months.\n\n## STEP-BY-STEP ACTION PLAN\n1. Confirm your occupation is on the MLTSSL or State occupation list\n2. Apply for skills assessment (3-6 months, AUD 400-1,000)\n3. Book and sit English test if not done (IELTS/PTE)\n4. Lodge EOI in SkillSelect with maximum claimed points\n5. Apply for state nomination (190/491) if applicable\n6. Await invitation (fortnightly rounds)\n7. Lodge visa application within 60 days of invitation (AUD 4,640+)\n8. Complete health checks and obtain police certificates\n9. Receive grant and plan first entry\n\n## IMPORTANT NOTICE\nThis is a demo result. In production, a full personalised analysis is generated. Verify current rules at immi.homeaffairs.gov.au.';
+      renderResults();
+    }, 2500);
+    return;
+  }
   const prompt = buildPrompt();
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
@@ -1061,7 +1070,7 @@ function runAnalysis(){
     },
     body:JSON.stringify({
       model:'claude-sonnet-4-20250514',
-      max_tokens:2000,
+      max_tokens:3000,
       messages:[{role:'user',content:prompt}]
     })
   })
@@ -1071,12 +1080,12 @@ function runAnalysis(){
       result=data.content[0].text;
       renderResults();
     } else {
-      alert('Error: '+(data.error?data.error.message:'Unknown error'));
+      alert('Error: '+(data.error?data.error.message:'Unknown error. Check your API key.'));
       go(flow==='whv'?'whv-form':'skilled-form');
     }
   })
   .catch(err=>{
-    alert('Connection error. Please try again.');
+    alert('Connection error. Please check your internet connection and try again.');
     go(flow==='whv'?'whv-form':'skilled-form');
   });
 }
